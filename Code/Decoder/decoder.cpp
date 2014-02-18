@@ -13,6 +13,8 @@ using namespace std;
 #include <string.h>
 #include <sstream>
 
+#include "RobotData.cpp"
+
 
 //Target host details: (ROBOT )
 #define PORT 30003
@@ -37,7 +39,7 @@ void startNet(){
     int i = 1;
     int opt =  setsockopt( sd, IPPROTO_TCP, TCP_NODELAY, (void *)&i, sizeof(i));
     
-    cout << opt << endl;
+
 
     inet_pton(AF_INET, HOST, &ipv4addr);
     hp = gethostbyaddr(&ipv4addr, sizeof ipv4addr, AF_INET);
@@ -56,39 +58,27 @@ void startNet(){
 void readSocket(){
   const int recvlen = 756; // package lenght. 96 values, 1 int.
   char buffer[recvlen];
-  char doubleBuffer[recvlen-4];
-  char doubleTrouble[recvlen-4];
- 
- 
- 
+
   int byte_count =0;
-  
-  double * data; // 95 doubles
 
  byte_count = recv(sd, buffer, recvlen, 0);
  
  
-memcpy (doubleBuffer, &buffer[4], recvlen-4) ;
 
  cout << "Modtaget " << byte_count << " bytes. Data: " << ntohl(*(int*)(buffer)) << endl;
 
-for(int i=0;i<94;i++){
-  
-  for(int k=0;k<8;k++){
-  // For every byte in the double  
-    
-    doubleTrouble[(i*8)+k] = doubleBuffer[(i*8)+(7-k)];
-    //cout << "K,I, K+I*8 " << k << "," << i << ", " << k+i*8 << endl;
-    
-  }
+ RobotData rd1(RobotData::UR5_V1x5,buffer);
+ cout << "Time: " << rd1.getTime() << endl;
 
-}
  
+ double q[6];
+ rd1.getqActual(q);
  
-     data = (double *)(&doubleTrouble);
-     cout << (data[73]) << endl;
-
-  
+ double qTarget[6];
+ rd1.getqTarget(qTarget);
+ 
+  cout << "qTarget: " << qTarget[0] << "," << qTarget[1] << ","<< qTarget[2] << ","<< qTarget[3] << ","<< qTarget[4] << "," << qTarget[5] << "," << endl;
+   cout << "qactual: " << q[0] << "," << q[1] << ","<< q[2] << ","<< q[3] << ","<< q[4] << "," << q[5] << "," << endl;
   
   
   
