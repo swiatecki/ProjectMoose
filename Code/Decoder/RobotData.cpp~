@@ -13,7 +13,9 @@ public:
   RobotData(RobotType type, char * package);
   double getTime();
   void getqActual(double * returnArray);
+    void getqdActual(double * returnArray);
   void getqTarget(double * returnArray);
+  
   
   
 private:
@@ -28,9 +30,9 @@ private:
     
     // Container for keeping relations between data name and positions
     int time;
-    int qTarget; // Start value.
-    int qactual[6]; // 6;
-    int qdactual[6]; // 6;
+    int qTarget; // Start values.
+    int qactual; // Joint pos.
+    int qdactual; // Joint velocity
     
   }dm;
 
@@ -59,18 +61,12 @@ RobotData::RobotData(RobotType type, char * package) // constructor
     // OBS!! take the number from documentation and subtract 1 !! 
     // This beacuse the first value is the integer! 
      
+    // Define where the data starts
     dm.time = 0;
-    
-    
     dm.qTarget = 1;
-    
-    
-    dm.qactual[0] = 31;
-    dm.qactual[1] = 32;
-    dm.qactual[2] = 33;
-    dm.qactual[3] = 34;
-    dm.qactual[4] = 35;
-    dm.qactual[5] = 36;
+    dm.qactual = 31;
+    dm.qdactual = 37;
+  
 
     
      
@@ -128,7 +124,7 @@ void RobotData::getqActual(double *qActual){
   
   for(int i=0;i<6;i++){
     
-    qActual[i] = data[dm.qactual[i]];
+    qActual[i] = data[dm.qactual+i];
     
   }
   
@@ -143,6 +139,21 @@ void RobotData::getqTarget(double *qTarget){
   for(int i=0;i<6;i++){
     
     qTarget[i] = data[dm.qTarget+i];
+    
+  }
+  
+  
+}
+
+
+void RobotData::getqdActual(double *qdActual){
+  
+ // Array size
+ int size = 6; // Returns a 6 element array..
+  
+  for(int i=0;i<6;i++){
+    
+    qdActual[i] = data[dm.qdactual+i];
     
   }
   

@@ -140,7 +140,7 @@ void *recvThread(void *arg){
  //cout << "Modtaget " << byte_count << " bytes. Data: " << ntohl(*(int*)(buffer)) << endl;
 
  RobotData rd1(RobotData::UR5_V1x5,buffer);
- cout << "Time: " << rd1.getTime() << endl;
+ //cout << "Time: " << rd1.getTime() << endl;
 
  
  double q[6];
@@ -163,8 +163,12 @@ void *recvThread(void *arg){
  double xx[6] = {0,0,0,0,0,0};
  
   tmp.robotTime = rd1.getTime(); // Returns double
-  rd1.getqActual(tmp.qActual); // pass array pointer to store data.
+  
   tmp.sysTime =0;
+  
+  rd1.getqActual(tmp.qActual); // pass array pointer to store data.
+  rd1.getqdActual(tmp.qdActual); // pass array pointer to store data.
+  
   
    //cout << "qactual tmp: " << tmp.qActual[0] << "," << tmp.qActual[1] << ","<< tmp.qActual[2] << ","<< tmp.qActual[3] << ","<< tmp.qActual[4] << "," << tmp.qActual[5] << "," << endl;
   

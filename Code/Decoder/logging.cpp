@@ -22,7 +22,13 @@ for(data_sz i = 0; i != size; ++i){
      <<  data[i].qActual[2] << "," 
      <<  data[i].qActual[3] << "," 
      <<  data[i].qActual[4] << "," 
-     <<  data[i].qActual[5] << 
+      <<  data[i].qActual[5] << "," 
+    <<  data[i].qdActual[0] << "," 
+    <<  data[i].qdActual[1] << "," 
+    <<  data[i].qdActual[2] << "," 
+    <<  data[i].qdActual[3] << "," 
+    <<  data[i].qdActual[4] << "," 
+    <<  data[i].qdActual[5] <<  
     endl;
   // Close the file stream explicitly
 
