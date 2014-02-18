@@ -107,7 +107,7 @@ RobotData::RobotData(RobotType type, char * package) // constructor
   }
   
   data = (double *)(&doubleTrouble);
-  cout << data[1] << endl;
+ // cout << data[1] << endl;
   
   
 }

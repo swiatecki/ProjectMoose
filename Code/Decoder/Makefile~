@@ -12,7 +12,7 @@ OUT = decoder
 
 all: $(PROGS) 
 	g++ -c -g $(CPPFLAGS) $(CXXFLAGS) $(PROGS) -O0
-	g++  -g $(PROGS) $(LIBS) -lcom_err -O0 -o $(OUT)
+	g++  -g $(PROGS) $(LIBS) -lpthread -lcom_err -O0 -o $(OUT)
 
 
 clean : 
