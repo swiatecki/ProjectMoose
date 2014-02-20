@@ -42,7 +42,7 @@ void ctrlCHandler(int s);
    unsigned int maxTicks; // number of 125 hz ticks the command will live for
    string theCommand; // For storing the command
    
-   
+   cmd(int _maxTicks, string _theCommand): maxTicks(_maxTicks), theCommand(_theCommand){}
 };
 
 
@@ -206,7 +206,7 @@ void *recvThread(void *arg){
   
   // Write logs
 
- writeLog(log,"test01.txt");
+ writeLog(log,"test02.txt");
  
   
   
@@ -239,18 +239,23 @@ void *cmdThread(void *arg){
   
   time1.tv_nsec = 8000000; // 8 ms / 125 hz
   
-  double elapsedTime = 0;
+  long elapsedTicks = 0;
+  long totalElapsedTicks = 0;
   
   // Sends commands to robot. Runs as thread
   
   
   
-  queue<string> cmdList;
+  queue<cmd> cmdList;
 
+  // 63 = 0.5s
+  cmd cmd0(250,"movel(p[-0.144, -0.530, 0.579, 2.2128, 2.0803, 0],1.2,0.3,1,0)\n"); // Go to start
   
-  string cmd1 = "speedl([0.4, 0, 0, 0, 0, 0],0.5,1)\n";
-  string cmd2 = "speedl([0.4, 0.2, 0, 0, 0, 0],0.5,1)\n";
+  cmd cmd1(125,"speedl([0.1, 0, 0, 0, 0, 0],1.2,1)\n");
+  cmd cmd2(125,"speedl([0.4, 0, 0, 0, 0, 0],1.2,1)\n");
   
+  
+   cmdList.push(cmd0);
   cmdList.push(cmd1);
   cmdList.push(cmd2);
   
@@ -260,22 +265,38 @@ void *cmdThread(void *arg){
   while(!cmdList.empty()){
     
     
+    cmd currentCmd = cmdList.front();
+    string cmdString = currentCmd.theCommand;
     
-    int rtnB =0;
-    string currentCmd = cmdList.front();
     
-    int length = strlen(currentCmd.c_str());
+    
+    
+    int length = strlen(cmdString.c_str());
+    
+    
  
     
-     rtnB = write(sd,currentCmd.c_str(),length);
+     write(sd,cmdString.c_str(),length);
      
-        printf("%s, %x, %d \n",currentCmd.c_str(),currentCmd.c_str(),length);
+     printf("@ %ld - %s\n",totalElapsedTicks,cmdString.c_str());
      
      
-     
+     while(elapsedTicks < currentCmd.maxTicks){
+       
+       // Next command.
+       
+       nanosleep(&time1,NULL); // Lets sleep for 8ms/one tick
+	elapsedTicks++;
+       
+    }
+    
+    // Its time for a new command, pop the queue
+    totalElapsedTicks+=elapsedTicks;
+     elapsedTicks=0;
      cmdList.pop();
+  
      
-     nanosleep(&time1,NULL); // Lets sleep for 8ms
+    
      
   }
   
