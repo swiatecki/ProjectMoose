@@ -10,4 +10,4 @@ qdAcc = diff(qdActual); % Acceleration
 
 %plot(qdAcc(:,1)) % Base joint acc
 
-plot(qddTarget(:,1))
+plot(qActual(:,1))

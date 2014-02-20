@@ -13,6 +13,7 @@
 #include <pthread.h>
 #include <signal.h>// For catching Ctrl C
 #include <queue>
+#include <time.h>
 #include "RobotData.cpp"
 #include "logging.h"
 
@@ -36,6 +37,13 @@ void ctrlCHandler(int s);
  int runState = 1;
 
 
+ 
+ struct cmd{
+   unsigned int maxTicks; // number of 125 hz ticks the command will live for
+   string theCommand; // For storing the command
+   
+   
+};
 
 
 void startNet(){
@@ -227,6 +235,12 @@ void ctrlCHandler(int s){
 
 void *cmdThread(void *arg){
   
+  struct timespec time1;
+  
+  time1.tv_nsec = 8000000; // 8 ms / 125 hz
+  
+  double elapsedTime = 0;
+  
   // Sends commands to robot. Runs as thread
   
   
@@ -245,6 +259,8 @@ void *cmdThread(void *arg){
   
   while(!cmdList.empty()){
     
+    
+    
     int rtnB =0;
     string currentCmd = cmdList.front();
     
@@ -258,6 +274,9 @@ void *cmdThread(void *arg){
      
      
      cmdList.pop();
+     
+     nanosleep(&time1,NULL); // Lets sleep for 8ms
+     
   }
   
 
