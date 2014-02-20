@@ -28,7 +28,13 @@ for(data_sz i = 0; i != size; ++i){
     <<  data[i].qdActual[2] << "," 
     <<  data[i].qdActual[3] << "," 
     <<  data[i].qdActual[4] << "," 
-    <<  data[i].qdActual[5] <<  
+    <<  data[i].qdActual[5] << ","
+    <<  data[i].qddTarget[0] << ","
+    <<  data[i].qddTarget[1] << ","
+    <<  data[i].qddTarget[2] << ","
+    <<  data[i].qddTarget[3] << ","
+    <<  data[i].qddTarget[4] << ","
+    <<  data[i].qddTarget[5] << 
     endl;
   // Close the file stream explicitly
 

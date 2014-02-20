@@ -12,8 +12,10 @@
 #include <sstream>
 #include <pthread.h>
 #include <signal.h>// For catching Ctrl C
+#include <queue>
 #include "RobotData.cpp"
 #include "logging.h"
+
 
 using namespace std;
 
@@ -24,6 +26,7 @@ using namespace std;
 
 
 void * recvThread(void *arg);
+void *cmdThread(void *arg);
 void ctrlCHandler(int s);
 
 
@@ -92,9 +95,18 @@ int main(){
   pthread_t recvThreadID;
   
   if(pthread_create(&recvThreadID,NULL,&recvThread,NULL)){
-    cout << "Error in Thread creation" << endl;
+    cout << "Error in recv Thread creation" << endl;
     return -1;
   }
+  
+  // Spawn a command(send) thread
+  pthread_t cmdThreadID;
+  
+  if(pthread_create(&cmdThreadID,NULL,&cmdThread,NULL)){
+    cout << "Error in cmd Thread creation" << endl;
+    return -1;
+  }
+  
   
   
   
@@ -104,9 +116,11 @@ int main(){
   }
   
   pthread_join(recvThreadID,NULL);
-  cout << "Threads joined" << endl; 
-  
-  
+  pthread_join(cmdThreadID,NULL);
+    
+
+ 
+   cout << "Threads joined" << endl; 
   stopNet();
   
   
@@ -128,7 +142,8 @@ void *recvThread(void *arg){
  
   
   while(runState){
-   const int recvlen = 756; // package lenght. 96 values, 1 int.
+  
+  const int recvlen = 756; // package lenght. 96 values, 1 int.
   char buffer[recvlen];
 
   int byte_count =0;
@@ -168,7 +183,7 @@ void *recvThread(void *arg){
   
   rd1.getqActual(tmp.qActual); // pass array pointer to store data.
   rd1.getqdActual(tmp.qdActual); // pass array pointer to store data.
-  
+  rd1.getqddTarget(tmp.qddTarget); // pass array pointer to store data.
   
    //cout << "qactual tmp: " << tmp.qActual[0] << "," << tmp.qActual[1] << ","<< tmp.qActual[2] << ","<< tmp.qActual[3] << ","<< tmp.qActual[4] << "," << tmp.qActual[5] << "," << endl;
   
@@ -207,4 +222,59 @@ void ctrlCHandler(int s){
  
   
 }
+
+
+
+void *cmdThread(void *arg){
+  
+  // Sends commands to robot. Runs as thread
+  
+  
+  
+  queue<string> cmdList;
+
+  
+  string cmd1 = "speedl([0.4, 0, 0, 0, 0, 0],0.5,1)\n";
+  string cmd2 = "speedl([0.4, 0.2, 0, 0, 0, 0],0.5,1)\n";
+  
+  cmdList.push(cmd1);
+  cmdList.push(cmd2);
+  
+  
+  
+  
+  while(!cmdList.empty()){
+    
+    int rtnB =0;
+    string currentCmd = cmdList.front();
+    
+    int length = strlen(currentCmd.c_str());
+ 
+    
+     rtnB = write(sd,currentCmd.c_str(),length);
+     
+        printf("%s, %x, %d \n",currentCmd.c_str(),currentCmd.c_str(),length);
+     
+     
+     
+     cmdList.pop();
+  }
+  
+
+  
+  
+
+  
+  
+  //Ctrl handler has issued halt command. Let stop this thread
+  
+  return NULL;
+  
+  
+  
+}
+
+
+
+
 
