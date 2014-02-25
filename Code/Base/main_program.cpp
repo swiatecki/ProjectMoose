@@ -229,7 +229,7 @@ void *cmdThread(void *arg){
   cmd cmd2(125,"speedl([0.4, 0, 0, 0, 0, 0],1.2,1)\n");
   
   
-   cmdList.push(cmd0);
+  cmdList.push(cmd0);
   cmdList.push(cmd1);
   cmdList.push(cmd2);
   
