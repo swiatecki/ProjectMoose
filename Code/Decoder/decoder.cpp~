@@ -237,6 +237,7 @@ void *cmdThread(void *arg){
   
   struct timespec time1;
   
+  time1.tv_sec =0;
   time1.tv_nsec = 8000000; // 8 ms / 125 hz
   
   long elapsedTicks = 0;
