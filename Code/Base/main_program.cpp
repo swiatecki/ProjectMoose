@@ -119,12 +119,12 @@ void *recvThread(void *arg){
   
   while(runState){
   
-  const int recvlen = 756; // package lenght. 96 values, 1 int.
-  char buffer[recvlen];
+ // const int recvlen = 756; // package lenght. 96 values, 1 int.
+  char buffer[rd1.getRecvLength()];
 
   int byte_count =0;
 
- byte_count = recv(n.getSocket(), buffer, recvlen, 0);
+ byte_count = recv(n.getSocket(), buffer, rd1.getRecvLength(), 0);
  
  rd1.setBuffer(buffer);
 

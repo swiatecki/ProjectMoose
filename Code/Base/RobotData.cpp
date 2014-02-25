@@ -21,7 +21,7 @@ public:
  void getqdActual(double * returnArray);
   void getqTarget(double * returnArray);
   void getqddTarget(double *returnArray);
-  
+  int getRecvLength();
   
   
 private:
@@ -61,7 +61,8 @@ RobotData::RobotData(RobotType type, char * package) // constructor
   if(type == UR5_V1x5){
     recvlen = 756;
     numDoubles = 94;
-    buffer = new char[recvlen];
+    
+    //buffer = new char[recvlen]; // redundant
     
     // Fill out datamap. 
     // OBS!! take the number from documentation and subtract 1 !! 
@@ -123,8 +124,16 @@ RobotData::RobotData(RobotType type) // constructor
   if(type == UR5_V1x5){
     recvlen = 756;
     numDoubles = 94;
-    buffer = new char[recvlen]();
+    
+    /* This buffer init is not nessecary 
+     * 
+     * */
+    
+   // buffer = new char[recvlen]();
    // memset(buffer,'0',recvlen); // The () in the line above replaces this, which initializes the array
+    
+    
+    
     
     // Fill out datamap. 
     // OBS!! take the number from documentation and subtract 1 !! 
@@ -155,7 +164,7 @@ RobotData::RobotData(RobotType type) // constructor
 RobotData::~RobotData()
 {
  // cout << "Deconstructor" <<endl;
-  delete [] buffer;
+  //delete [] buffer;
 }
 
 
@@ -229,11 +238,13 @@ void RobotData::getqddTarget(double *qddTarget){
 
 
 void RobotData::setBuffer(char * package){
+  // Sets buffer
   
+
   
-    /* DECODING */
-  
-  
+    buffer = package;
+    
+  /* DECODING */
    // Flip bits, and extract doubles
   
   //char doubleTrouble[recvlen-4]; // 4 bits for integer
@@ -256,6 +267,15 @@ void RobotData::setBuffer(char * package){
   }
   
   data = (double *)(&doubleTrouble);
+  
+  
+  
+}
+
+
+int RobotData::getRecvLength(){
+  
+  return recvlen;
   
   
   
