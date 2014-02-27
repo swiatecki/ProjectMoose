@@ -14,9 +14,10 @@
 #include <queue>
 #include <time.h>
 #include "../../Base/RobotData.cpp"
-#include "../../Base/logging.h"
+#include "logging.h"
 #include "../../Base/Network.h"
 #include "../../Base/RobotCommander.h"
+#include "../../Base/Timing.cpp"
 
 
 using namespace std;
@@ -71,12 +72,25 @@ int main(){
   
  char buffer[rd1.getRecvLength()];
   
- int tmpSocket;
- tmpSocket = n.getSocket();
+
+ // Lets make a RobotCommander, for initial position
+ int tmpSocket = n.getSocket();
  
  RobotCommander cmdStart(&tmpSocket);
+ RobotCommander robot(&tmpSocket);
   
- // while(runState){
+ 
+ 
+ // Go to start
+cmdStart.addCmd("movel(p[-0.144, -0.530, 0.579, 2.2128, 2.0803, 0],1.2,0.3,1,0)",250);
+cmdStart.run();
+  
+Timing timer0;
+
+
+ 
+ int send =0;
+  while(runState){
     
      /* READ DATA */
     
@@ -87,6 +101,11 @@ int main(){
 
  byte_count = recv(n.getSocket(), buffer, rd1.getRecvLength(), 0);
  
+ if(send){
+  timer0.setStop();
+ }
+ 
+ 
  rd1.setBuffer(buffer);
 
  
@@ -96,10 +115,8 @@ int main(){
  double qTarget[6];
  rd1.getqTarget(qTarget);
  
- 
- 
- 
- 
+ cout << rd1.getTime() << endl;
+
 //  cout << "qTarget: " << qTarget[0] << "," << qTarget[1] << ","<< qTarget[2] << ","<< qTarget[3] << ","<< qTarget[4] << "," << qTarget[5] << "," << endl;
  //  cout << "qactual: " << q[0] << "," << q[1] << ","<< q[2] << ","<< q[3] << ","<< q[4] << "," << q[5] << "," << endl;
   
@@ -111,11 +128,13 @@ int main(){
  
   tmp.robotTime = rd1.getTime(); // Returns double
   
-  tmp.sysTime =0;
+ tmp.sysTime = (unsigned long)timer0.elapsedTimems();
   
   rd1.getqActual(tmp.qActual); // pass array pointer to store data.
  rd1.getqdActual(tmp.qdActual); // pass array pointer to store data.
  rd1.getqddTarget(tmp.qddTarget); // pass array pointer to store data.
+ rd1.getqTarget(tmp.qTarget);
+ rd1.getqdTarget(tmp.qdTarget);
   
    //cout << "qactual tmp: " << tmp.qActual[0] << "," << tmp.qActual[1] << ","<< tmp.qActual[2] << ","<< tmp.qActual[3] << ","<< tmp.qActual[4] << "," << tmp.qActual[5] << "," << endl;
   
@@ -136,28 +155,17 @@ int main(){
    * 
    * */
   
-  // Go to start
-cmdStart.addCmd("movel(p[-0.144, -0.530, 0.579, 2.2128, 2.0803, 0],1.2,0.3,1,0)",250);
-  cmdStart.run();
+  if(!send){
+  robot.addCmd("speedl([0.4, 0, 0, 0, 0, 0],0.8,1)",125);
+  timer0.setStart();
+  robot.run();
+  send=1;
+ 
+  }
 
   
  
-  
- // cmd cmd1(125,"speedl([0.1, 0, 0, 0, 0, 0],1.2,1)\n");
- // cmd cmd2(125,"speedl([0.4, 0, 0, 0, 0, 0],1.2,1)\n");
-  
-
-  
-  
-  
-  
- 
-  
-  
-  
-  
- 
-//  }
+  }
   
   // runState changed..
   
@@ -173,19 +181,12 @@ cmdStart.addCmd("movel(p[-0.144, -0.530, 0.579, 2.2128, 2.0803, 0],1.2,0.3,1,0)"
   * End read data.
   */
   
+
   
   
-  
-  
-  
-  while(runState){
-    
-    // Running, do nothing
-  }
-  
-//    writeLog(log,"delayLog01.txt");
+    writeLog(log,"delayLog01.txt");
  
-   cout << "Threads joined" << endl; 
+   cout << "Exiting" << endl; 
    
   n.stopNet();
   

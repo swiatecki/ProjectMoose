@@ -19,8 +19,10 @@ public:
   double getTime();
   void getqActual(double * returnArray);
  void getqdActual(double * returnArray);
-  void getqTarget(double * returnArray);
-  void getqddTarget(double *returnArray);
+  void getqTarget(double * returnArray); // target pos
+  void getqddTarget(double *returnArray); // Target acc
+  void getqdTarget(double *returnArray); // Target vel
+
   int getRecvLength();
   
   
@@ -36,10 +38,12 @@ private:
     
     // Container for keeping relations between data name and positions
     int time;
-    int qTarget; // Start values.
+    int qTarget; // Joint traget acc. 
     int qactual; // Actual Joint pos.
     int qdactual; // Actual Joint velocity
     int qddTarget; // Joint traget acc. 
+    int qdTarget; // Joint traget acc. 
+
     
     
   }dm;
@@ -74,6 +78,8 @@ RobotData::RobotData(RobotType type, char * package) // constructor
     dm.qactual = 31;
     dm.qdactual = 37;
     dm.qddTarget = 13;
+    dm.qdTarget = 7;
+
   
 
     
@@ -197,7 +203,7 @@ void RobotData::getqTarget(double *qTarget){
  // Array size
  int size = 6;
   
-  for(int i=0;i<6;i++){
+  for(int i=0;i<size;i++){
     
     qTarget[i] = data[dm.qTarget+i];
     
@@ -212,7 +218,7 @@ void RobotData::getqdActual(double *qdActual){
  // Array size
  int size = 6; // Returns a 6 element array..
   
-  for(int i=0;i<6;i++){
+  for(int i=0;i<size;i++){
     
     qdActual[i] = data[dm.qdactual+i];
     
@@ -227,7 +233,7 @@ void RobotData::getqddTarget(double *qddTarget){
  // Array size
  int size = 6; // Returns a 6 element array..
   
-  for(int i=0;i<6;i++){
+  for(int i=0;i<size;i++){
     
     qddTarget[i] = data[dm.qddTarget+i];
     
@@ -235,6 +241,22 @@ void RobotData::getqddTarget(double *qddTarget){
   
   
 }
+
+
+void RobotData::getqdTarget(double *qdTarget){
+  
+ // Array size
+ int size = 6; // Returns a 6 element array..
+  
+  for(int i=0;i<size;i++){
+    
+    qdTarget[i] = data[dm.qdTarget+i];
+    
+  }
+  
+  
+}
+
 
 
 void RobotData::setBuffer(char * package){

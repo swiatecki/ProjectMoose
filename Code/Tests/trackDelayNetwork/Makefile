@@ -5,7 +5,7 @@
 CPPFLAGS = -Wall
 
 # Add code to to compiled here. eg test.cpp => test.o 
-PROGS = tracker.cpp ../../Base/Network.o ../../Base/RobotCommander.o
+PROGS = tracker.cpp logging.o  ../../Base/Network.o ../../Base/RobotCommander.o
 
 # The Executable that will be made
 OUT = tracker 
