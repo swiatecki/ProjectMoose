@@ -32,15 +32,6 @@ void ctrlCHandler(int s);
  int runState = 1;
 
 
- 
- struct cmd{
-   unsigned int maxTicks; // number of 125 hz ticks the command will live for
-   string theCommand; // For storing the command
-   
-   cmd(int _maxTicks, string _theCommand): maxTicks(_maxTicks), theCommand(_theCommand){}
-};
-
-
 
 // Init a network object
  Network n;
@@ -220,7 +211,7 @@ void *cmdThread(void *arg){
   
   
   
-  queue<cmd> cmdList;
+  
 
   // 63 = 0.5s
   cmd cmd0(250,"movel(p[-0.144, -0.530, 0.579, 2.2128, 2.0803, 0],1.2,0.3,1,0)\n"); // Go to start
