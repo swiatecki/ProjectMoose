@@ -16,6 +16,7 @@ double qdActual[6];
 double qddTarget[6];
 double qdTarget[6];
 double qTarget[6];
+int test01;
 
 
 };

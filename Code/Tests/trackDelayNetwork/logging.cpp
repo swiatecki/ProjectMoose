@@ -13,8 +13,10 @@ data_sz size = data.size();
 
 ofstream a_file (filename.c_str(),ios::trunc);
 
-for(data_sz i = 0; i != size; ++i){
+a_file.precision(15);
 
+for(data_sz i = 0; i != size; ++i){
+  
   a_file<< data[i].robotTime << "," 
     << data[i].sysTime << "," 
     <<  data[i].qActual[0] << ","  // Actual joint pos
@@ -46,7 +48,8 @@ for(data_sz i = 0; i != size; ++i){
     <<  data[i].qTarget[2] << "," 
     <<  data[i].qTarget[3] << "," 
     <<  data[i].qTarget[4] << "," 
-    <<  data[i].qTarget[5] <<  
+    <<  data[i].qTarget[5] << ","
+    << data[i].test01 <<
     endl;
   // Close the file stream explicitly
 

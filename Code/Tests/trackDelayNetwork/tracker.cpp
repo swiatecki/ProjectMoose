@@ -82,14 +82,33 @@ int main(){
  
  
  // Go to start
-cmdStart.addCmd("movel(p[-0.144, -0.530, 0.579, 2.2128, 2.0803, 0],1.2,0.3,1,0)",250);
+cmdStart.addCmd("movel(p[-0.144, -0.530, 0.579, 2.2128, 2.0803, 0],1.0,0.3,0,0)",250);
 cmdStart.run();
   
-Timing timer0;
 
+n.stopNet();
+// End goto intial posistion
+
+
+
+n.startNet();
+
+//
+
+Timing timer0;
 
  
  int send =0;
+ 
+ double q[6];
+ double qTarget[6];
+ 
+ 
+
+int counter = 0;
+
+ 
+ timer0.setStart();
   while(runState){
     
      /* READ DATA */
@@ -98,24 +117,34 @@ Timing timer0;
 
 
   int byte_count =0;
+// MSG_WAITALL sets blocking
+  
 
- byte_count = recv(n.getSocket(), buffer, rd1.getRecvLength(), 0);
+  
+ byte_count = recv(n.getSocket(), buffer, rd1.getRecvLength(), MSG_WAITALL);
  
- if(send){
+ if(byte_count < rd1.getRecvLength()){
+   
+   //something went wrong
+   
+   cout << "CRITIAL ERROR!!! - Network fail. Bytes recv: " << byte_count << endl;
+   break;
+}
+ 
+ 
+
   timer0.setStop();
- }
  
+ //timer0.setStop();
  
  rd1.setBuffer(buffer);
 
  
- double q[6];
+
  rd1.getqActual(q);
- 
- double qTarget[6];
  rd1.getqTarget(qTarget);
  
- cout << rd1.getTime() << endl;
+ //cout << rd1.getTime() << endl;
 
 //  cout << "qTarget: " << qTarget[0] << "," << qTarget[1] << ","<< qTarget[2] << ","<< qTarget[3] << ","<< qTarget[4] << "," << qTarget[5] << "," << endl;
  //  cout << "qactual: " << q[0] << "," << q[1] << ","<< q[2] << ","<< q[3] << ","<< q[4] << "," << q[5] << "," << endl;
@@ -124,23 +153,25 @@ Timing timer0;
  
  slogData tmp;
  
- double xx[6] = {0,0,0,0,0,0};
  
   tmp.robotTime = rd1.getTime(); // Returns double
   
- tmp.sysTime = (unsigned long)timer0.elapsedTimems();
+ tmp.sysTime = timer0.elapsedTimeus();
   
+ 
   rd1.getqActual(tmp.qActual); // pass array pointer to store data.
  rd1.getqdActual(tmp.qdActual); // pass array pointer to store data.
  rd1.getqddTarget(tmp.qddTarget); // pass array pointer to store data.
  rd1.getqTarget(tmp.qTarget);
  rd1.getqdTarget(tmp.qdTarget);
+ tmp.test01 = send;
   
    //cout << "qactual tmp: " << tmp.qActual[0] << "," << tmp.qActual[1] << ","<< tmp.qActual[2] << ","<< tmp.qActual[3] << ","<< tmp.qActual[4] << "," << tmp.qActual[5] << "," << endl;
   
   log.push_back(tmp);
+
+    
  
-   
   /* 
    * 
    * Controller
@@ -155,14 +186,26 @@ Timing timer0;
    * 
    * */
   
+  
+  
   if(!send){
-  robot.addCmd("speedl([0.4, 0, 0, 0, 0, 0],0.8,1)",125);
-  timer0.setStart();
+    
+    
+    if(counter == 250){
+      
+  robot.addCmd("speedl([0.4, 0, 0, 0, 0, 0],0.8,1)",0);
   robot.run();
   send=1;
+      
+  
+    }
  
   }
 
+  
+  
+  
+  counter++;
   
  
   }
@@ -210,7 +253,7 @@ void ctrlCHandler(int s){
   
   signal = s;
   
- printf("Caught signal %d \n\n\n\n\n\n\n",signal);
+// printf("Caught signal %d \n\n\n\n\n\n\n",signal);
  
  runState = 0;
  

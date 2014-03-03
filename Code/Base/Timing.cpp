@@ -84,11 +84,15 @@ uint64_t Timing::elapsedTimems(){
   // First get the elapsed time in micro seconds (us)
   uint64_t elapsedus = elapsedTimeus();
   
+
   
   // Convert from us to ms 
  
-  elapsedTimems = elapsedus/1000;
+  elapsedTimems = (uint64_t) elapsedus/1000;
   
+  
+  //  cout << elapsedTimems << endl;
+    
   return elapsedTimems;
   
   

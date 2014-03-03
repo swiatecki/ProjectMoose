@@ -30,6 +30,13 @@ void Network::startNet()
     int i = 1;
     int opt =  setsockopt( sd, IPPROTO_TCP, TCP_NODELAY, (void *)&i, sizeof(i));
     
+    
+    struct timeval tv;
+
+    tv.tv_sec = 2;  /* 30 Secs Timeout */
+    tv.tv_usec = 0;  // Not init'ing this can cause strange errors
+
+    setsockopt(sd, SOL_SOCKET, SO_RCVTIMEO, (char *)&tv,sizeof(struct timeval));
 
 
     inet_pton(AF_INET, HOST, &ipv4addr);
@@ -41,7 +48,7 @@ void Network::startNet()
 
     connect(sd, (const sockaddr *)&server, sizeof(server));
   
-    cout << sd << endl;
+    cout << "Connected to socket: " << sd << endl;
   
 
 

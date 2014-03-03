@@ -44,6 +44,7 @@ private:
     int qddTarget; // Joint traget acc. 
     int qdTarget; // Joint traget acc. 
 
+
     
     
   }dm;
@@ -73,6 +74,8 @@ RobotData::RobotData(RobotType type, char * package) // constructor
     // This beacuse the first value is the integer! 
      
     // Define where the data starts
+    
+      /* Probably WRONG consturctor!!! */
     dm.time = 0;
     dm.qTarget = 1;
     dm.qactual = 31;
@@ -80,7 +83,7 @@ RobotData::RobotData(RobotType type, char * package) // constructor
     dm.qddTarget = 13;
     dm.qdTarget = 7;
 
-  
+
 
     
      
@@ -150,7 +153,9 @@ RobotData::RobotData(RobotType type) // constructor
     dm.qTarget = 1;
     dm.qactual = 31;
     dm.qdactual = 37;
+    dm.qdTarget = 7;
     dm.qddTarget = 13;
+    
   
 
     
