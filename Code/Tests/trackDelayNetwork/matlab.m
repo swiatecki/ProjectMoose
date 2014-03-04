@@ -39,17 +39,17 @@ legend('Target vel','Actual vel')
 xlim([248 266]);
 ylim([-0.03 0.07])
 hold off
-
-f = figure()
-hold all
-set(f,'name','Acc','numbertitle','off')
-plot(qddTarget(:,1),'x')
-plot(qddActual(:,1),'o')
-plot(test01)
-legend('Target acc','Actual acc')
-xlim([248 266]);
-ylim([-0.6 1.5])
-hold off
+% 
+% f = figure()
+% hold all
+% set(f,'name','Acc','numbertitle','off')
+% plot(qddTarget(:,1),'x')
+% plot(qddActual(:,1),'o')
+% plot(test01)
+% legend('Target acc','Actual acc')
+% xlim([248 266]);
+% ylim([-0.6 1.5])
+% hold off
 
 
 %%

@@ -40,7 +40,17 @@ void ctrlCHandler(int s);
 
 
  
-int main(){
+int main(int argc, char *argv[]){
+  string logfilename;
+  
+  
+  if(argc < 2){
+    logfilename = "delayLogDefault.txt";
+    
+  }else{
+      logfilename = argv[1];
+  }
+
   
   // Lets catch Ctrl+C
   struct sigaction sigIntHandler;
@@ -193,7 +203,7 @@ int counter = 0;
     
     if(counter == 250){
       
-  robot.addCmd("speedl([0.4, 0, 0, 0, 0, 0],0.8,1)",0);
+  robot.addCmd("speedj([0.4, 0, 0, 0, 0, 0],10,2)",0);
   robot.run();
   send=1;
       
@@ -227,7 +237,7 @@ int counter = 0;
 
   
   
-    writeLog(log,"delayLog01.txt");
+    writeLog(log,logfilename);
  
    cout << "Exiting" << endl; 
    
