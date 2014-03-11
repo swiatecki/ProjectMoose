@@ -36,8 +36,8 @@ plot(qdTarget(:,1),'x')
 plot(qdActual(:,1),'o')
 plot(test01)
 legend('Target vel','Actual vel')
-xlim([248 266]);
-ylim([-0.03 0.07])
+%xlim([248 266]);
+%ylim([-0.03 0.07])
 hold off
 % 
 % f = figure()
@@ -56,6 +56,32 @@ hold off
 %Comparing velocity and acc
 
 figure()
-plot(qddActual(:,1))
-figure()
-plot(qdActual(:,1))
+plot(qActual(:,1))
+
+
+%%
+
+%Plot position and model..
+% Might want to run ../Model01/model01.m first
+stepsize = 0.4; %rad/s
+offset = 1.091; %Offset in actual position
+
+
+
+f = figure()
+set(f,'name','Position','numbertitle','off')
+hold all
+title('Target Position vs Model')
+plot(qTarget(:,1),'*')
+
+%opt = stepDataOptions('InputOffset',1000);
+s = step(dPlantDelay,3)
+svector = [zeros(1,250) s'];
+svector = svector*0.4;
+plot(svector + offset,'rx')
+
+plot(test01*2)
+legend('Target Pos','Model pos')
+%xlim([248 266]);
+%ylim([-0.03 0.07])
+hold off
