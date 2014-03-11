@@ -1,4 +1,6 @@
-#include <iostream>
+// Outdated
+
+/*#include <iostream>
 #include <algorithm>
 #include <stdio.h>
 #include <sys/socket.h>
@@ -278,7 +280,7 @@ void *cmdThread(void *arg){
   
   
 }
-
+*/
 
 
 
