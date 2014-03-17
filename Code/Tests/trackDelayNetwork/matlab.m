@@ -59,9 +59,9 @@ figure()
 plot(qActual(:,1))
 
 
-%%
+%% Testing our model of the robot
 
-%Plot position and model..
+%Plot position and model.. 
 % Might want to run ../Model01/model01.m first
 stepsize = 0.4; %rad/s
 offset = 1.091; %Offset in actual position

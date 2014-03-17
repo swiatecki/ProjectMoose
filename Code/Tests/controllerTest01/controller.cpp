@@ -118,8 +118,11 @@ int counter = 0;
 
  timer0.setStart();
  
- double ref = -0.3;
+ double ref = 1.4;
+ // double ref = 1.6;
+ 
  double e,signal = 0.0;
+ double initE =0;
  
  /*
   * 
@@ -199,9 +202,30 @@ int counter = 0;
   
   e = ref-tmp.qActual[0];
   
-  //  signal = e*18.1970;
-    signal = e*4;
+  if(initE == 0){
+    initE = e;
+  }
   
+  
+ 
+   signal = e*18.1970;
+  // signal = e*5;
+  
+   if(signal> 3.2){
+     signal = 3.2;
+  }else if(signal< -3.2){
+    
+    signal = -3.2;
+  }
+  
+  
+  
+  
+  if(signal < 0.01 && signal > 0 ){
+    signal = 0;
+  }else if(signal > -0.01 && signal < 0){
+        signal = 0;
+  }
   
   
   
@@ -218,7 +242,7 @@ int counter = 0;
     
       
 std::ostringstream strs;
-strs << "speedj([" << signal <<  ", 0, 0, 0, 0, 0],10,0.008)";
+strs << "speedj([" << signal <<  ", 0, 0, 0, 0, 0],15,1)";
 std::string cmd = strs.str();
     
       
@@ -262,9 +286,9 @@ std::string cmd = strs.str();
     writeLog(log,logfilename);
  
    cout << "Exiting" << endl; 
+    cout << "InitE = " << initE << endl; 
    
   n.stopNet();
-  
   
   // Write log
   
