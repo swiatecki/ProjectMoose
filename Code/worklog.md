@@ -9,7 +9,7 @@
 * Model01_limited.mdl comes to life. This has a saturation 
 * Model02 not good enough, implement rate-limit, to simulate acc. 
 * Determine which stepsizes should be used! (HOW?)
-
+* Simulate in matlab(controller01.m FIX!) + reallife(controller.cpp))
 
 
 
