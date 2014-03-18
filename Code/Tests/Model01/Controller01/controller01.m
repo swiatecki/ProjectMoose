@@ -27,10 +27,3 @@ figure()
 step(sys)
 
 
-%% Til simulink modellen
-initE = 0.01;
-sim('model01_limited',2)
-
-f = figure()
-set(f,'name','Simulink model','numbertitle','off')
-plot(simout.time,simout.signals.values)

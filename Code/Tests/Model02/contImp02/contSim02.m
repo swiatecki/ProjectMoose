@@ -8,7 +8,7 @@ load log_kp18_step03.txt
 load delayLogDefault.txt	
 
 delayLog = log_kp18_step03;
-%delayLog = delayLogDefault;
+delayLog = delayLogDefault;
 
 qActual = delayLog(:,3:8); % Actual Position
 qdActual = delayLog(:,9:14); %Actual  Velocity
@@ -37,3 +37,11 @@ plot(tv,qActual(:,1))
 figure()
 plot(qddActual(:,1))
 
+
+%% %% Til simulink modellen
+initE = 0.3;
+sim('model02',2)
+
+f = figure()
+set(f,'name','Simulink model','numbertitle','off')
+plot(simout.time,simout.signals.values)

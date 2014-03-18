@@ -5,10 +5,10 @@
 CPPFLAGS = -Wall
 
 # Add code to to compiled here. eg test.cpp => test.o 
-PROGS = controller.cpp logging.o  ../../Base/Network.o ../../Base/RobotCommander.o
+PROGS = contImp02.cpp logging.o  ../../../Base/Network.o ../../../Base/RobotCommander.o
 
 # The Executable that will be made
-OUT = controller 
+OUT = controller02
 
 all: $(PROGS) 
 	g++ -c -g $(CPPFLAGS) $(CXXFLAGS) $(PROGS) -O0 
