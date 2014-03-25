@@ -28,20 +28,21 @@ sysTime = delayLog(:,2);
 %%
 
 f = figure()
-set(f,'name','Actual position','numbertitle','off')
+hold all
+set(f,'name','Actual position vs simulated','numbertitle','off')
 tv = 0:0.008:(length(robotTime)/125)-0.008;
-plot(tv,qActual(:,1))
+plot(tv,qActual(:,1)+offset)
 
 
-%% 
-figure()
-plot(qddActual(:,1))
+
+% Til simulink modellen
+initE = 0.448025
 
 
-%% %% Til simulink modellen
-initE = 0.3;
 sim('model02',2)
+offset=qActual(1,1);
 
-f = figure()
-set(f,'name','Simulink model','numbertitle','off')
+
 plot(simout.time,simout.signals.values)
+legend('Actual position','Simulated position');
+hold off;

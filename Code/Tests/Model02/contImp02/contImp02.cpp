@@ -118,11 +118,12 @@ int counter = 0;
 
  timer0.setStart();
  
- double ref = 1.4;
+ double ref = -1.2;
  // double ref = 1.6;
  
  double e,signal = 0.0;
  double initE =0;
+ double initBase=0;
  
  /*
   * 
@@ -204,12 +205,13 @@ int counter = 0;
   
   if(initE == 0){
     initE = e;
+    initBase = tmp.qActual[0];
   }
   
   
  
    signal = e*18.1970;
-  // signal = e*5;
+  //signal = e*16;
   
    if(signal> 3.2){
      signal = 3.2;
@@ -287,7 +289,7 @@ std::string cmd = strs.str();
  
    cout << "Exiting" << endl; 
     cout << "InitE = " << initE << endl; 
-   
+    cout << "InitBase = " << initBase << endl;
   n.stopNet();
   
   // Write log
