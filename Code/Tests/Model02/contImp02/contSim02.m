@@ -5,10 +5,13 @@ clc;
 format short
 %load log.txt;
 load log_kp18_step03.txt
+load kp12.txt
 load delayLogDefault.txt	
 
 delayLog = log_kp18_step03;
-delayLog = delayLogDefault;
+
+delayLog = kp12;
+%delayLog = delayLogDefault;
 
 qActual = delayLog(:,3:8); % Actual Position
 qdActual = delayLog(:,9:14); %Actual  Velocity
@@ -31,7 +34,7 @@ f = figure()
 hold all
 set(f,'name','Actual position vs simulated','numbertitle','off')
 tv = 0:0.008:(length(robotTime)/125)-0.008;
-plot(tv,qActual(:,1)+offset)
+plot(tv,qActual(:,1)-offset)
 
 
 
@@ -40,6 +43,30 @@ initE = 0.448025
 
 
 sim('model02',2)
+offset=qActual(1,1);
+
+
+plot(simout.time,simout.signals.values)
+legend('Actual position','Simulated position');
+hold off;
+
+
+%%
+% MODEL 2 - QUICK !!!
+
+f = figure()
+hold all
+set(f,'name','Actual position vs simulated Quick!!','numbertitle','off')
+tv = 0:0.008:(length(robotTime)/125)-0.008;
+plot(tv,qActual(:,1)-offset)
+
+
+
+% Til simulink modellen
+initE = 0.448025
+
+
+sim('model02_quick',2)
 offset=qActual(1,1);
 
 

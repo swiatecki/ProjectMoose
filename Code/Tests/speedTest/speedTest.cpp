@@ -13,11 +13,11 @@
 #include <signal.h>// For catching Ctrl C
 #include <queue>
 #include <time.h>
-#include "../../../Base/RobotData.cpp"
+#include "../../Base/RobotData.cpp"
 #include "logging.h"
-#include "../../../Base/Network.h"
-#include "../../../Base/RobotCommander.h"
-#include "../../../Base/Timing.cpp"
+#include "../../Base/Network.h"
+#include "../../Base/RobotCommander.h"
+#include "../../Base/Timing.cpp"
 
 
 using namespace std;
@@ -92,7 +92,7 @@ int main(int argc, char *argv[]){
  
  
  // Go to start
-cmdStart.addCmd("movel(p[-0.144, -0.530, 0.579, 2.2128, 2.0803, 0],1.0,0.3,0,0)",250);
+cmdStart.addCmd("movel(p[-0.602, -0.149, 0.579, 2.2128, 2.0803, 0],1.0,0.3,0,0)",250);
 cmdStart.run();
   
 
@@ -196,7 +196,7 @@ int counter = 0;
  
   /* 
    * 
-   * Controller
+   * NOT ACTUALLY A CONTROLLER - FIXED SPEED!!
    * 
    * */
   
@@ -211,7 +211,10 @@ int counter = 0;
   
  
    //signal = e*18.1970;
-  signal = e*12;
+  signal = 1;
+  
+  
+  
   
    if(signal> 3.2){
      signal = 3.2;
@@ -244,7 +247,7 @@ int counter = 0;
     
       
 std::ostringstream strs;
-strs << "speedj([" << signal <<  ", 0, 0, 0, 0, 0],15,1)";
+strs << "speedj([" << signal <<  ", 0, 0, 0, 0, 0],15,2)";
 std::string cmd = strs.str();
     
       
