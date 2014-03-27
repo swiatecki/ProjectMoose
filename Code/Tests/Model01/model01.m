@@ -23,7 +23,7 @@ dPlantDelay = dPlant*delay
 %called from another file.
 
 %figure()
-%step(dPlantDelay,0.2)
+%dstep(dPlantDelay,0.2)
 %title('Step response of simple model')
 
 
