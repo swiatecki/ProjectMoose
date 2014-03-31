@@ -6,6 +6,7 @@ format short
 %load log.txt;
 load log_kp18_step03.txt
 load kp12.txt
+load kp11.txt
 load delayLogDefault.txt	
 
 delayLog = log_kp18_step03;
@@ -39,7 +40,7 @@ plot(tv,qActual(:,1)-offset)
 
 
 % Til simulink modellen
-initE = 0.448025
+initE = 0.421956
 
 
 sim('model02',2)
@@ -63,7 +64,8 @@ plot(tv,qActual(:,1)-offset)
 
 
 % Til simulink modellen
-initE = 0.448025
+initE11 = 0.421956;
+initE = 0.44803;
 
 
 sim('model02_quick',2)
