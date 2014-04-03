@@ -12,13 +12,16 @@ public:
   void addCmd(std::string _command, int _maxTicks);
   int run();
   
-    
+   void sethandleDelay(bool setTo);
+       
     
    struct cmd{
    unsigned int maxTicks; // number of 125 hz ticks the command will live for
    std::string theCommand; // For storing the command
    
    cmd(int _maxTicks, std::string _theCommand): maxTicks(_maxTicks), theCommand(_theCommand){}
+   
+
 };
 
   
@@ -33,6 +36,7 @@ private:
   long elapsedTicks;
   long totalElapsedTicks;
   int * socket;
+  bool handleDelay;
 };
 
 #endif

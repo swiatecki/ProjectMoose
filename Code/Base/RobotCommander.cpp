@@ -28,6 +28,7 @@ RobotCommander::RobotCommander(int * _socket){
   totalElapsedTicks = 0;
   elapsedTicks = 0;
   socket = _socket;
+  handleDelay = true;
 }
 
 
@@ -44,24 +45,26 @@ void RobotCommander::addCmd(string _command, int _maxTicks)
 
 int RobotCommander::run()
 {
+string cmdString;
+int length;
 
    while(!cmdList.empty()){
     
     
     cmd currentCmd = cmdList.front();
-    string cmdString = currentCmd.theCommand;
+     cmdString = currentCmd.theCommand;
     
     // add a linebreak \n, for correct URScript parsing
     cmdString = cmdString + "\n";
     
     
-    int length = strlen(cmdString.c_str());
+    length = strlen(cmdString.c_str());
     
      write(*socket,cmdString.c_str(),length);
      
-     printf("@ %ld - %s\n",totalElapsedTicks,cmdString.c_str());
+   //  printf("@ %ld - %s\n",totalElapsedTicks,cmdString.c_str());
      
-     
+     if(handleDelay){
      while(elapsedTicks < currentCmd.maxTicks){
        
        // Next command.
@@ -74,6 +77,9 @@ int RobotCommander::run()
     // Its time for a new command, pop the queue
     totalElapsedTicks+=elapsedTicks;
      elapsedTicks=0;
+     
+     }
+     
      cmdList.pop();
   
      
@@ -85,5 +91,13 @@ int RobotCommander::run()
   return 0;
   
 }
+
+
+
+void RobotCommander::sethandleDelay(bool setTo)
+{
+handleDelay = setTo;
+}
+
 
 
