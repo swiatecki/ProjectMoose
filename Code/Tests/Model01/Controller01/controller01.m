@@ -11,8 +11,9 @@ run('../model01.m');
 
 
 margin(dPlantDelay)
+bode(dPlantDelay)
 %% Desgin a controller with 60 degrees phase margin
-Kp = db2mag(25.2)
+Kp = db2mag(25.2) % manually found at 60 deg.
 
 controller = dPlantDelay*Kp
 margin(controller)

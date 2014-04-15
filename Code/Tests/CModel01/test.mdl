@@ -1,9 +1,13 @@
 Model {
-  Name			  "cmodel01"
+  Name			  "test"
   Version		  7.9
   MdlSubVersion		  0
   GraphicalInterface {
-    NumRootInports	    0
+    NumRootInports	    1
+    Inport {
+      BusObject		      ""
+      Name		      "In1"
+    }
     NumRootOutports	    1
     Outport {
       BusObject		      ""
@@ -11,7 +15,7 @@ Model {
       Name		      "Out1"
     }
     ParameterArgumentNames  ""
-    ComputedModelVersion    "1.24"
+    ComputedModelVersion    "1.27"
     NumModelReferences	    0
     NumTestPointedSignals   0
   }
@@ -26,15 +30,15 @@ Model {
   MinMaxOverflowArchiveMode "Overwrite"
   FPTRunName		  "Run 1"
   MaxMDLFileLineLength	  120
-  Created		  "Mon Mar 17 12:57:24 2014"
+  Created		  "Tue Apr 15 15:16:00 2014"
   Creator		  "ex16"
   UpdateHistory		  "UpdateHistoryNever"
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "ex16"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Tue Apr 15 19:11:15 2014"
-  RTWModifiedTimeStamp	  319489873
-  ModelVersionFormat	  "1.%<AutoIncrement:24>"
+  LastModifiedDate	  "Tue Apr 15 20:20:08 2014"
+  RTWModifiedTimeStamp	  319493897
+  ModelVersionFormat	  "1.%<AutoIncrement:27>"
   ConfigurationManager	  "None"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -71,17 +75,19 @@ Model {
     $PropName		    "DataLoggingOverride"
     $ObjectID		    1
     $ClassName		    "Simulink.SimulationData.ModelLoggingInfo"
-    model_		    "Untitled1"
+    model_		    "test"
+    signals_		    []
     overrideMode_	    [0.0]
     Array {
       Type		      "Cell"
       Dimension		      1
-      Cell		      "Untitled1"
+      Cell		      "test"
       PropName		      "logAsSpecifiedByModels_"
     }
     Array {
       Type		      "Cell"
-      Dimension		      0
+      Dimension		      1
+      Cell		      []
       PropName		      "logAsSpecifiedByModelsSSIDs_"
     }
   }
@@ -136,7 +142,7 @@ Model {
 	  $ObjectID		  3
 	  Version		  "1.12.0"
 	  StartTime		  "0.0"
-	  StopTime		  "2"
+	  StopTime		  "10.0"
 	  AbsTol		  "auto"
 	  FixedStep		  "auto"
 	  InitialStep		  "auto"
@@ -617,7 +623,7 @@ Model {
       }
       Name		      "Configuration"
       CurrentDlgPage	      "Solver"
-      ConfigPrmDlgPosition     [ 196, 136, 1084, 870 ] 
+      ConfigPrmDlgPosition     [ 840, 197, 1720, 827 ] 
     }
     PropName		    "ConfigurationSets"
   }
@@ -737,6 +743,14 @@ Model {
       Interpolate	      on
     }
     Block {
+      BlockType		      Mux
+      Inputs		      "4"
+      DisplayOption	      "none"
+      UseBusObject	      off
+      BusObject		      "BusObject"
+      NonVirtualBus	      off
+    }
+    Block {
       BlockType		      Outport
       Port		      "1"
       OutMin		      "[]"
@@ -810,15 +824,6 @@ Model {
       SampleTime	      "-1"
     }
     Block {
-      BlockType		      Step
-      Time		      "1"
-      Before		      "0"
-      After		      "1"
-      SampleTime	      "-1"
-      VectorParams1D	      on
-      ZeroCross		      on
-    }
-    Block {
       BlockType		      SubSystem
       ShowPortLabels	      "FromPortIcon"
       Permissions	      "ReadWrite"
@@ -869,8 +874,8 @@ Model {
     }
   }
   System {
-    Name		    "cmodel01"
-    Location		    [1, 347, 1208, 994]
+    Name		    "test"
+    Location		    [1, 51, 1281, 998]
     Open		    on
     ModelBrowserVisibility  off
     ModelBrowserWidth	    200
@@ -884,24 +889,31 @@ Model {
     ShowPageBoundaries	    off
     ZoomFactor		    "100"
     ReportName		    "simulink-default.rpt"
-    SIDHighWatermark	    "41"
+    SIDHighWatermark	    "84"
+    Block {
+      BlockType		      Inport
+      Name		      "In1"
+      SID		      "47"
+      Position		      [425, 138, 455, 152]
+      ZOrder		      -1
+      IconDisplay	      "Port number"
+      SampleTime	      "T"
+    }
     Block {
       BlockType		      Constant
-      Name		      "Constant"
-      SID		      "30"
-      Position		      [535, 310, 565, 340]
+      Name		      "Constant1"
+      SID		      "49"
+      Position		      [410, 195, 440, 225]
       ZOrder		      -4
-      BlockMirror	      on
-      Value		      "intrinsic"
+      Value		      "radius"
     }
     Block {
       BlockType		      Product
-      Name		      "Divide"
-      SID		      "29"
+      Name		      "Divide1"
+      SID		      "51"
       Ports		      [2, 1]
-      Position		      [445, 277, 475, 308]
+      Position		      [585, 127, 615, 158]
       ZOrder		      -8
-      BlockMirror	      on
       Inputs		      "*/"
       InputSameDT	      off
       OutDataTypeStr	      "Inherit: Inherit via internal rule"
@@ -909,77 +921,22 @@ Model {
       SaturateOnIntegerOverflow	off
     }
     Block {
-      BlockType		      Gain
-      Name		      "Gain1"
-      SID		      "31"
-      Position		      [370, 280, 400, 310]
-      ZOrder		      -8
-      BlockMirror	      on
-      Gain		      "height"
-      ParamDataTypeStr	      "Inherit: Inherit via internal rule"
-      OutDataTypeStr	      "Inherit: Inherit via internal rule"
-      SaturateOnIntegerOverflow	off
-    }
-    Block {
-      BlockType		      Scope
-      Name		      "Out Scope"
-      SID		      "38"
-      Ports		      [1]
-      Position		      [225, 209, 255, 241]
-      ZOrder		      -3
-      BlockMirror	      on
-      Floating		      off
-      Location		      [467, 584, 1101, 965]
-      Open		      off
-      NumInputPorts	      "1"
-      List {
-	ListType		AxesTitles
-	axes1			"%<SignalLabel>"
-      }
-      List {
-	ListType		ScopeGraphics
-	FigureColor		"[0.5 0.5 0.5]"
-	AxesColor		"[0 0 0]"
-	AxesTickColor		"[1 1 1]"
-	LineColors		"[1 1 0;1 0 1;0 1 1;1 0 0;0 1 0;0 0 1]"
-	LineStyles		"-|-|-|-|-|-"
-	LineWidths		"[0.5 0.5 0.5 0.5 0.5 0.5]"
-	MarkerStyles		"none|none|none|none|none|none"
-      }
-      ShowLegends	      off
-      SaveName		      "ScopeData1"
-      DataFormat	      "StructureWithTime"
-      SampleTime	      "0"
-    }
-    Block {
-      BlockType		      Step
-      Name		      "Step"
-      SID		      "35"
-      Position		      [280, 145, 310, 175]
-      ZOrder		      -22
-      Time		      "0"
-      After		      "0.1"
-      SampleTime	      "T"
-    }
-    Block {
-      BlockType		      ToWorkspace
-      Name		      "To Workspace"
-      SID		      "14"
-      Ports		      [1]
-      Position		      [190, 350, 250, 380]
-      ZOrder		      -7
-      BlockMirror	      on
-      VariableName	      "simout"
-      MaxDataPoints	      "inf"
-      SampleTime	      "-1"
-      SaveFormat	      "Structure With Time"
+      BlockType		      Mux
+      Name		      "Mux"
+      SID		      "84"
+      Ports		      [2, 1]
+      Position		      [555, 406, 560, 444]
+      ZOrder		      -12
+      ShowName		      off
+      Inputs		      "2"
+      DisplayOption	      "bar"
     }
     Block {
       BlockType		      SubSystem
-      Name		      "subRobot"
-      SID		      "26"
-      Ports		      [1, 1]
-      Position		      [595, 155, 635, 215]
+      Name		      "RealBlock"
+      SID		      "54"
+      Ports		      [1, 2]
+      Position		      [695, 125, 735, 185]
       MinAlgLoopOccurrences   off
       PropExecContextOutsideSubsystem off
       RTWSystemCode	      "Auto"
@@ -988,9 +945,9 @@ Model {
       RequestExecContextInheritance off
       MaskHideContents	      off
       System {
-	Name			"subRobot"
-	Location		[563, 517, 1185, 885]
-	Open			off
+	Name			"RealBlock"
+	Location		[390, 589, 1012, 957]
+	Open			on
 	ModelBrowserVisibility	off
 	ModelBrowserWidth	200
 	ScreenColor		"white"
@@ -1005,14 +962,14 @@ Model {
 	Block {
 	  BlockType		  Inport
 	  Name			  "In1"
-	  SID			  "28"
+	  SID			  "55"
 	  Position		  [15, 143, 45, 157]
 	  IconDisplay		  "Port number"
 	}
 	Block {
 	  BlockType		  RateLimiter
 	  Name			  "Rate Limiter1"
-	  SID			  "21"
+	  SID			  "56"
 	  Position		  [190, 135, 220, 165]
 	  ZOrder		  -7
 	  RisingSlewLimit	  "15"
@@ -1022,7 +979,7 @@ Model {
 	Block {
 	  BlockType		  Scope
 	  Name			  "Rate Scope"
-	  SID			  "24"
+	  SID			  "57"
 	  Ports			  [1]
 	  Position		  [290, 29, 320, 61]
 	  ZOrder		  -3
@@ -1055,9 +1012,9 @@ Model {
 	Block {
 	  BlockType		  DiscreteTransferFcn
 	  Name			  "Robot1"
-	  SID			  "22"
+	  SID			  "58"
 	  Ports			  [1, 1]
-	  Position		  [260, 132, 320, 168]
+	  Position		  [310, 132, 370, 168]
 	  ZOrder		  -2
 	  InputPortMap		  "u0"
 	  Numerator		  "[0.008]"
@@ -1067,7 +1024,7 @@ Model {
 	Block {
 	  BlockType		  Scope
 	  Name			  "Saturation Scope"
-	  SID			  "36"
+	  SID			  "59"
 	  Ports			  [1]
 	  Position		  [135, 14, 165, 46]
 	  ZOrder		  -3
@@ -1096,7 +1053,7 @@ Model {
 	Block {
 	  BlockType		  Saturate
 	  Name			  "Saturation1"
-	  SID			  "23"
+	  SID			  "60"
 	  Ports			  [1, 1]
 	  Position		  [100, 135, 130, 165]
 	  ZOrder		  -15
@@ -1108,7 +1065,7 @@ Model {
 	Block {
 	  BlockType		  Sum
 	  Name			  "Sum1"
-	  SID			  "37"
+	  SID			  "61"
 	  Ports			  [2, 1]
 	  Position		  [70, 75, 90, 95]
 	  ZOrder		  -18
@@ -1122,7 +1079,7 @@ Model {
 	Block {
 	  BlockType		  Sum
 	  Name			  "Sum2"
-	  SID			  "25"
+	  SID			  "62"
 	  Ports			  [2, 1]
 	  Position		  [230, 75, 250, 95]
 	  ZOrder		  -18
@@ -1136,8 +1093,16 @@ Model {
 	Block {
 	  BlockType		  Outport
 	  Name			  "Out1"
-	  SID			  "27"
-	  Position		  [345, 143, 375, 157]
+	  SID			  "63"
+	  Position		  [400, 143, 430, 157]
+	  IconDisplay		  "Port number"
+	}
+	Block {
+	  BlockType		  Outport
+	  Name			  "Scope"
+	  SID			  "82"
+	  Position		  [310, 78, 340, 92]
+	  Port			  "2"
 	  IconDisplay		  "Port number"
 	}
 	Line {
@@ -1178,9 +1143,17 @@ Model {
 	Line {
 	  SrcBlock		  "Sum2"
 	  SrcPort		  1
-	  Points		  [0, -40]
-	  DstBlock		  "Rate Scope"
-	  DstPort		  1
+	  Points		  [0, -20]
+	  Branch {
+	    Points		    [0, -20]
+	    DstBlock		    "Rate Scope"
+	    DstPort		    1
+	  }
+	  Branch {
+	    Points		    [0, 20]
+	    DstBlock		    "Scope"
+	    DstPort		    1
+	  }
 	}
 	Line {
 	  SrcBlock		  "Robot1"
@@ -1212,62 +1185,93 @@ Model {
       }
     }
     Block {
+      BlockType		      ToWorkspace
+      Name		      "To Workspace"
+      SID		      "83"
+      Ports		      [1]
+      Position		      [745, 410, 805, 440]
+      ZOrder		      -7
+      VariableName	      "simout"
+      MaxDataPoints	      "inf"
+      SampleTime	      "-1"
+      SaveFormat	      "Structure With Time"
+    }
+    Block {
+      BlockType		      Gain
+      Name		      "px to m"
+      SID		      "71"
+      Position		      [540, 295, 570, 325]
+      ZOrder		      -8
+      BlockMirror	      on
+      Gain		      "magic"
+      ParamDataTypeStr	      "Inherit: Inherit via internal rule"
+      OutDataTypeStr	      "Inherit: Inherit via internal rule"
+      SaturateOnIntegerOverflow	off
+    }
+    Block {
       BlockType		      Outport
       Name		      "Out1"
-      SID		      "34"
-      Position		      [230, 288, 260, 302]
+      SID		      "64"
+      Position		      [370, 268, 400, 282]
       ZOrder		      -23
       BlockMirror	      on
       IconDisplay	      "Port number"
     }
     Line {
-      SrcBlock		      "subRobot"
+      SrcBlock		      "Constant1"
       SrcPort		      1
-      Points		      [50, 0; 0, 100]
-      DstBlock		      "Divide"
-      DstPort		      1
-    }
-    Line {
-      SrcBlock		      "Constant"
-      SrcPort		      1
-      Points		      [-20, 0; 0, -25]
-      DstBlock		      "Divide"
+      Points		      [60, 0; 0, -60]
+      DstBlock		      "Divide1"
       DstPort		      2
     }
     Line {
-      SrcBlock		      "Divide"
+      SrcBlock		      "In1"
       SrcPort		      1
-      DstBlock		      "Gain1"
+      Points		      [25, 0; 0, -10]
+      DstBlock		      "Divide1"
       DstPort		      1
     }
     Line {
-      SrcBlock		      "Gain1"
+      SrcBlock		      "px to m"
       SrcPort		      1
-      Points		      [-50, 0; 0, 30]
+      Points		      [-10, 0]
       Branch {
-	Points			[0, 40]
-	DstBlock		"To Workspace"
+	Points			[-50, 0; 0, -35]
+	DstBlock		"Out1"
 	DstPort			1
       }
       Branch {
-	Points			[0, -30]
-	Branch {
-	  DstBlock		  "Out1"
-	  DstPort		  1
-	}
-	Branch {
-	  Points		  [0, -70]
-	  DstBlock		  "Out Scope"
-	  DstPort		  1
-	}
+	Points			[0, 105]
+	DstBlock		"Mux"
+	DstPort			1
       }
     }
     Line {
-      SrcBlock		      "Step"
+      SrcBlock		      "RealBlock"
       SrcPort		      1
-      Points		      [0, 5; 265, 0]
-      DstBlock		      "subRobot"
+      Points		      [25, 0; 0, 170]
+      DstBlock		      "px to m"
       DstPort		      1
+    }
+    Line {
+      SrcBlock		      "Divide1"
+      SrcPort		      1
+      Points		      [60, 0]
+      DstBlock		      "RealBlock"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "Mux"
+      SrcPort		      1
+      DstBlock		      "To Workspace"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "RealBlock"
+      SrcPort		      2
+      Points		      [5, 0; 0, 225; -210, 0; 0, 40]
+      DstBlock		      "Mux"
+      DstPort		      2
     }
   }
 }
