@@ -21,6 +21,7 @@ public:
    
    cmd(int _maxTicks, std::string _theCommand): maxTicks(_maxTicks), theCommand(_theCommand){}
    
+   
 
 };
 

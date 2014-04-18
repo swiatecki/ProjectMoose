@@ -34,7 +34,13 @@ for(data_sz i = 0; i != size; ++i){
     <<  data[i].qddTarget[2] << ","
     <<  data[i].qddTarget[3] << ","
     <<  data[i].qddTarget[4] << ","
-    <<  data[i].qddTarget[5] << 
+    <<  data[i].qddTarget[5] << ","
+    <<  data[i].tool[0] << ","
+    <<  data[i].tool[1] << ","
+    <<  data[i].tool[2] << ","
+    <<  data[i].tool[3] << ","
+    <<  data[i].tool[4] << ","
+    <<  data[i].tool[5] << 
     endl;
   // Close the file stream explicitly
 

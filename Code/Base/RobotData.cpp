@@ -22,6 +22,7 @@ public:
   void getqTarget(double * returnArray); // target pos
   void getqddTarget(double *returnArray); // Target acc
   void getqdTarget(double *returnArray); // Target vel
+  void getTool(double *returnArray); // Target vel
 
   int getRecvLength();
   
@@ -43,6 +44,7 @@ private:
     int qdactual; // Actual Joint velocity
     int qddTarget; // Joint traget acc. 
     int qdTarget; // Joint traget acc. 
+    int tool;
 
 
     
@@ -155,6 +157,7 @@ RobotData::RobotData(RobotType type) // constructor
     dm.qdactual = 37;
     dm.qdTarget = 7;
     dm.qddTarget = 13;
+    dm.tool = 73;
     
   
 
@@ -256,6 +259,21 @@ void RobotData::getqdTarget(double *qdTarget){
   for(int i=0;i<size;i++){
     
     qdTarget[i] = data[dm.qdTarget+i];
+    
+  }
+  
+  
+}
+
+
+void RobotData::getTool(double *tool){
+  
+ // Array size
+ int size = 6; // Returns a 6 element array..
+  
+  for(int i=0;i<size;i++){
+    
+    tool[i] = data[dm.tool+i];
     
   }
   

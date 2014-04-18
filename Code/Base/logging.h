@@ -14,6 +14,7 @@ unsigned long sysTime;
 double qActual[6];
 double qdActual[6];
 double qddTarget[6];
+double tool[6];
 
 
 };

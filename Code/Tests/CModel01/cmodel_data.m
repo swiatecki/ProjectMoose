@@ -11,7 +11,7 @@ magic = 0.0004748;
 
 %%
 
-[num, den] = dlinmod('cmodel01_ol',T,0.1);
+[num, den] = dlinmod('cmodel01_ol',T,0,0.1);
 sys = tf(num,den,T)
 
 margin(sys)
@@ -19,7 +19,7 @@ margin(sys)
 
 %60 degrees gives us -94.9 dB
 format longG
-db2mag(90.1)
+db2mag(28.2)
 
 %% Test
 x = Simulink.BlockDiagram.getInitialState('cmodel01');
@@ -32,6 +32,23 @@ sys = ss(A,B,C,D,T)
 
 margin(sys)
 
-step(sys)
+%%
+
+clc;
+format short
+load nstest.txt;
+
+delayLog = nstest;
+
+qActual = delayLog(:,3:8); % Actual Position
+qdActual = delayLog(:,9:14); %Actual  Velocity
+qddTarget = delayLog(:,15:20); % Target acc
+qdTarget = delayLog(:,21:26); % Target vel
+qTarget = delayLog(:,27:32); % Target pos
+tool = delayLog(:,33:38); % Target pos
+
+qddActual = diff(qdActual)/0.008;
+
+robotTime = delayLog(:,1);
 
 

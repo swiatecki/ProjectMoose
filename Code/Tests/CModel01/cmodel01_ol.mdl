@@ -12,10 +12,11 @@ Model {
     Outport {
       BusObject		      ""
       BusOutputAsStruct	      "off"
+      SignalName	      "[m]"
       Name		      "Out1"
     }
     ParameterArgumentNames  ""
-    ComputedModelVersion    "1.22"
+    ComputedModelVersion    "1.36"
     NumModelReferences	    0
     NumTestPointedSignals   0
   }
@@ -36,9 +37,9 @@ Model {
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "ex16"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Tue Apr 15 19:29:32 2014"
-  RTWModifiedTimeStamp	  319490969
-  ModelVersionFormat	  "1.%<AutoIncrement:22>"
+  LastModifiedDate	  "Wed Apr 16 16:24:48 2014"
+  RTWModifiedTimeStamp	  319556534
+  ModelVersionFormat	  "1.%<AutoIncrement:36>"
   ConfigurationManager	  "None"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -865,7 +866,7 @@ Model {
   }
   System {
     Name		    "cmodel01_ol"
-    Location		    [1, 347, 1208, 994]
+    Location		    [1, 209, 1208, 856]
     Open		    on
     ModelBrowserVisibility  off
     ModelBrowserWidth	    200
@@ -879,7 +880,7 @@ Model {
     ShowPageBoundaries	    off
     ZoomFactor		    "100"
     ReportName		    "simulink-default.rpt"
-    SIDHighWatermark	    "66"
+    SIDHighWatermark	    "103"
     Block {
       BlockType		      Inport
       Name		      "In1"
@@ -887,23 +888,6 @@ Model {
       Position		      [285, 158, 315, 172]
       ZOrder		      -1
       IconDisplay	      "Port number"
-    }
-    Block {
-      BlockType		      Constant
-      Name		      "Constant"
-      SID		      "30"
-      Position		      [550, 315, 580, 345]
-      ZOrder		      -4
-      BlockMirror	      on
-      Value		      "intrinsic"
-    }
-    Block {
-      BlockType		      Constant
-      Name		      "Constant1"
-      SID		      "66"
-      Position		      [320, 190, 350, 220]
-      ZOrder		      -4
-      Value		      "radius"
     }
     Block {
       BlockType		      Product
@@ -921,7 +905,7 @@ Model {
     }
     Block {
       BlockType		      Product
-      Name		      "Divide1"
+      Name		      "Divide From m to rad"
       SID		      "65"
       Ports		      [2, 1]
       Position		      [425, 147, 455, 178]
@@ -933,16 +917,100 @@ Model {
       SaturateOnIntegerOverflow	off
     }
     Block {
+      BlockType		      Product
+      Name		      "Divide1"
+      SID		      "96"
+      Ports		      [2, 1]
+      Position		      [610, 271, 640, 304]
+      ZOrder		      -8
+      BlockMirror	      on
+      Inputs		      "*/"
+      InputSameDT	      off
+      OutDataTypeStr	      "Inherit: Inherit via internal rule"
+      RndMeth		      "Floor"
+      SaturateOnIntegerOverflow	off
+      Port {
+	PortNumber		1
+	Name			"[px]"
+	RTWStorageClass		"Auto"
+	DataLoggingNameMode	"SignalName"
+      }
+    }
+    Block {
+      BlockType		      Constant
+      Name		      "Heigh"
+      SID		      "101"
+      Position		      [635, 380, 665, 410]
+      ZOrder		      -4
+      BlockMirror	      on
+      Value		      "height"
+    }
+    Block {
       BlockType		      Gain
-      Name		      "Gain1"
+      Name		      "Height"
       SID		      "31"
-      Position		      [370, 280, 400, 310]
+      Position		      [355, 278, 390, 312]
       ZOrder		      -8
       BlockMirror	      on
       Gain		      "height"
       ParamDataTypeStr	      "Inherit: Inherit via internal rule"
       OutDataTypeStr	      "Inherit: Inherit via internal rule"
       SaturateOnIntegerOverflow	off
+      Port {
+	PortNumber		1
+	Name			"[m]"
+	RTWStorageClass		"Auto"
+	DataLoggingNameMode	"SignalName"
+      }
+    }
+    Block {
+      BlockType		      Constant
+      Name		      "Intrinsic"
+      SID		      "30"
+      Position		      [470, 350, 500, 380]
+      ZOrder		      -4
+      BlockMirror	      on
+      Value		      "intrinsic"
+    }
+    Block {
+      BlockType		      Constant
+      Name		      "Intrinsic1"
+      SID		      "98"
+      Position		      [715, 390, 745, 420]
+      ZOrder		      -4
+      BlockMirror	      on
+      Value		      "intrinsic"
+    }
+    Block {
+      BlockType		      Product
+      Name		      "Mult"
+      SID		      "100"
+      Ports		      [2, 1]
+      Position		      [680, 276, 710, 309]
+      ZOrder		      -8
+      BlockMirror	      on
+      Inputs		      "**"
+      InputSameDT	      off
+      OutDataTypeStr	      "Inherit: Inherit via internal rule"
+      RndMeth		      "Floor"
+      SaturateOnIntegerOverflow	off
+    }
+    Block {
+      BlockType		      Constant
+      Name		      "Radius"
+      SID		      "66"
+      Position		      [335, 205, 365, 235]
+      ZOrder		      -4
+      Value		      "radius"
+    }
+    Block {
+      BlockType		      Constant
+      Name		      "Radius1"
+      SID		      "95"
+      Position		      [895, 240, 925, 270]
+      ZOrder		      -4
+      BlockMirror	      on
+      Value		      "radius"
     }
     Block {
       BlockType		      ToWorkspace
@@ -958,11 +1026,31 @@ Model {
       SaveFormat	      "Structure With Time"
     }
     Block {
+      BlockType		      Product
+      Name		      "from rad to m"
+      SID		      "94"
+      Ports		      [2, 1]
+      Position		      [780, 262, 810, 293]
+      ZOrder		      -8
+      BlockMirror	      on
+      Inputs		      "**"
+      InputSameDT	      off
+      OutDataTypeStr	      "Inherit: Inherit via internal rule"
+      RndMeth		      "Floor"
+      SaturateOnIntegerOverflow	off
+      Port {
+	PortNumber		1
+	Name			"[m]"
+	RTWStorageClass		"Auto"
+	DataLoggingNameMode	"SignalName"
+      }
+    }
+    Block {
       BlockType		      SubSystem
       Name		      "subRobot1"
       SID		      "55"
       Ports		      [1, 1]
-      Position		      [575, 135, 615, 195]
+      Position		      [740, 135, 780, 195]
       MinAlgLoopOccurrences   off
       PropExecContextOutsideSubsystem off
       RTWSystemCode	      "Auto"
@@ -970,6 +1058,12 @@ Model {
       Opaque		      off
       RequestExecContextInheritance off
       MaskHideContents	      off
+      Port {
+	PortNumber		1
+	Name			"[rad]"
+	RTWStorageClass		"Auto"
+	DataLoggingNameMode	"SignalName"
+      }
       System {
 	Name			"subRobot1"
 	Location		[420, 580, 1042, 948]
@@ -1204,23 +1298,25 @@ Model {
       IconDisplay	      "Port number"
     }
     Line {
-      SrcBlock		      "Constant"
+      SrcBlock		      "Intrinsic"
       SrcPort		      1
-      Points		      [-35, 0; 0, -25]
+      Points		      [45, 0; 0, -60]
       DstBlock		      "Divide"
       DstPort		      2
     }
     Line {
       SrcBlock		      "Divide"
       SrcPort		      1
-      Points		      [0, -5]
-      DstBlock		      "Gain1"
+      Points		      [-35, 0]
+      DstBlock		      "Height"
       DstPort		      1
     }
     Line {
-      SrcBlock		      "Gain1"
+      Name		      "[m]"
+      Labels		      [0, 0]
+      SrcBlock		      "Height"
       SrcPort		      1
-      Points		      [-50, 0; 0, 30]
+      Points		      [-35, 0; 0, 30]
       Branch {
 	Points			[0, 40]
 	DstBlock		"To Workspace"
@@ -1233,30 +1329,77 @@ Model {
       }
     }
     Line {
-      SrcBlock		      "subRobot1"
+      SrcBlock		      "Radius"
       SrcPort		      1
-      Points		      [30, 0; 0, 125]
-      DstBlock		      "Divide"
-      DstPort		      1
-    }
-    Line {
-      SrcBlock		      "Constant1"
-      SrcPort		      1
-      Points		      [10, 0; 0, -35]
-      DstBlock		      "Divide1"
+      Points		      [-5, 0; 0, -50]
+      DstBlock		      "Divide From m to rad"
       DstPort		      2
     }
     Line {
       SrcBlock		      "In1"
       SrcPort		      1
       Points		      [25, 0; 0, -10]
+      DstBlock		      "Divide From m to rad"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "Divide From m to rad"
+      SrcPort		      1
+      DstBlock		      "subRobot1"
+      DstPort		      1
+    }
+    Line {
+      Name		      "[rad]"
+      Labels		      [2, 0]
+      SrcBlock		      "subRobot1"
+      SrcPort		      1
+      Points		      [45, 0; 0, 105]
+      DstBlock		      "from rad to m"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "Radius1"
+      SrcPort		      1
+      Points		      [0, 30]
+      DstBlock		      "from rad to m"
+      DstPort		      2
+    }
+    Line {
+      SrcBlock		      "Heigh"
+      SrcPort		      1
+      Points		      [0, -55; 25, 0]
+      DstBlock		      "Divide1"
+      DstPort		      2
+    }
+    Line {
+      SrcBlock		      "Mult"
+      SrcPort		      1
+      Points		      [-20, 0]
       DstBlock		      "Divide1"
       DstPort		      1
     }
     Line {
+      SrcBlock		      "Intrinsic1"
+      SrcPort		      1
+      Points		      [0, -45; 35, 0; 0, -60]
+      DstBlock		      "Mult"
+      DstPort		      2
+    }
+    Line {
+      Name		      "[m]"
+      Labels		      [2, 0]
+      SrcBlock		      "from rad to m"
+      SrcPort		      1
+      Points		      [0, 5]
+      DstBlock		      "Mult"
+      DstPort		      1
+    }
+    Line {
+      Name		      "[px]"
+      Labels		      [0, 0]
       SrcBlock		      "Divide1"
       SrcPort		      1
-      DstBlock		      "subRobot1"
+      DstBlock		      "Divide"
       DstPort		      1
     }
   }
