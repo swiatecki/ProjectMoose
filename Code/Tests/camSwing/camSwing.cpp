@@ -71,7 +71,7 @@ struct coord{
 
 double x,y;
 int areaOfObject;
-
+int ready;
 }cameraError;
 
 //
@@ -206,7 +206,7 @@ n.stopNet();
 
 n.startNet();
 
-
+cameraError.ready =0;
 // Spawn a cameraThread
   
   pthread_t cameraThreadID;
@@ -314,7 +314,7 @@ void *cameraThread(void *arg){
   
 
   Timing tmr0;
-  Timing tmrFrame;
+  Timing tmrFrame,tmrProcessing,tmrIdle;
   vector<cameraLog> camLog;
   
 std::vector<cmdData> cmd;
@@ -324,11 +324,11 @@ std::vector<cmdData> cmd;
 
 cv::namedWindow("Thresholded", CV_WINDOW_AUTOSIZE); //create a window with the name "HSV"
 //cv::namedWindow( "Contours", CV_WINDOW_AUTOSIZE );
-int initShutter = 181;
+int initShutter = 280;
 //int initShutter = 0;
 
 int shutterVal = initShutter;
-int cannyMin = 60;
+int cannyMin = 17;
 
 int blockSize = 89;
 
@@ -388,43 +388,126 @@ while(runState){
  tmr0.setStop();
  
  cl.deltaus =  tmr0.elapsedTimeus();
- // compact log entry
+ 
+ cl.idle = cl.deltaus-cl.processing;
  camLog.push_back(cl);
+
  
  tmr0.setStart();
 cap >> frame;
 
+
+
+
+
 tmr0.setStop();
 cl.getFrame = tmr0.elapsedTimeus();
+
+
+tmrProcessing.setStart();
 //std::vector<std::vector<cv::Point> > contours;
 //std::vector<cv::Vec4i> hierarchy;
 
+/* Maybe */
+
+//Remove gripper from img
+
+// cv::Mat(frame,roi).copyTo(submatrix);
+// 
+// 
+// // Get color image, decode bayer BGGR.  
+// cv::cvtColor(submatrix,colorFrame,CV_BayerBG2RGB,0);
+// cv::cvtColor(colorFrame, grey, CV_RGB2GRAY );
+// 
+// 
+// tmr0.setStop();
+// cl.colorConversion = tmr0.elapsedTimeus();
+// 
+// // Threshold it. The black dot becomes white. (NIBARY_INV)
+// cv::threshold(grey,tresholdedFrame,cannyMin,255,cv::THRESH_BINARY_INV);
+
+/* end maybe */
+
+
+
+/* Before */
+
+//Remove gripper from img
+
+submatrix = cv::Mat(frame,roi);
+
 
 // Get color image, decode bayer BGGR.  
-cv::cvtColor(frame,colorFrame,CV_BayerBG2RGB,0);
+cv::cvtColor(submatrix,colorFrame,CV_BayerBG2RGB);
 cv::cvtColor(colorFrame, grey, CV_RGB2GRAY );
 
 
 tmr0.setStop();
 cl.colorConversion = tmr0.elapsedTimeus();
 
+// Threshold it. The black dot becomes white. (NIBARY_INV)
+cv::threshold(grey,tresholdedFrame,cannyMin,255,cv::THRESH_BINARY_INV);
+
+// /* end BEFORE */
+
+/* after* 
+ * 
+ **/
+
+//  // Get color image, decode bayer BGGR.  
+// cv::cvtColor(frame,colorFrame,CV_BayerBG2RGB,0);
+// cv::cvtColor(colorFrame, grey, CV_RGB2GRAY );
+// 
+// submatrix = cv::Mat(grey,roi);
+// 
+// tmr0.setStop();
+// cl.colorConversion = tmr0.elapsedTimeus();
+// 
+// 
+// 
+// 
+// // Threshold it. The black dot becomes white. (NIBARY_INV)
+// cv::threshold(grey,tresholdedFrame,cannyMin,255,cv::THRESH_BINARY_INV);
+
+/* 
+ * end after */
 
 
+/* no bayer* 
+ * 
+ **/
 
-// Remove gripper from img
+ // Get color image, decode bayer BGGR.  
+//cv::cvtColor(frame,colorFrame,CV_BayerBG2RGB,0);
+//cv::cvtColor(colorFrame, grey, CV_RGB2GRAY );
 
-submatrix = cv::Mat(grey,roi);
+// cv::Mat(frame,roi).copyTo(submatrix);;
+// 
+// tmr0.setStop();
+// cl.colorConversion = tmr0.elapsedTimeus();
+// 
+// 
+// 
+// 
+// // Threshold it. The black dot becomes white. (NIBARY_INV)
+// cv::threshold(submatrix,tresholdedFrame,cannyMin,255,cv::THRESH_BINARY_INV);
+
+/* 
+ * end no bayer */
+
 
 //cout << "Rows X Cols: " << frame.rows << " x " << frame.cols << endl;
 
-//string ty =  type2str( colorFrame.type() );
-//printf("Matrix: %s %dx%d \n", ty.c_str(), colorFrame.cols, colorFrame.rows );
+/*string ty =  type2str( frame.type() );
+printf("Matrix: %s %dx%d \n", ty.c_str(), frame.cols, frame.rows );
 
+ty =  type2str( submatrix.type() );
+printf("Matrix: %s %dx%d \n", ty.c_str(), submatrix.cols, submatrix.rows );
+*/
 // TRY: using raw image..
 //submatrix = cv::Mat(frame,roi);
 
-// Threshold it. The black dot becomes white. (NIBARY_INV)
-cv::threshold(submatrix,tresholdedFrame,cannyMin,255,cv::THRESH_BINARY_INV);
+
 
 if(blockSize % 2 == 0){
 //Adaptive threshold block size SKAL være ulige..
@@ -455,34 +538,34 @@ cameraError.areaOfObject =  cv::countNonZero(tresholdedFrame);
 tmr0.setStop();
 cl.area = tmr0.elapsedTimeus();
 
-if(debugMonitor){
-  // this is onlu needed if the users want to see whats going on.
-  
-  
-    // Draw it - convert to RGB to we can draw on it with colors
-    cv::cvtColor(tresholdedFrame, tresholdedFrame, CV_GRAY2RGB);
-    //cv::Mat drawing = cv::Mat::zeros( tresholdedFrame.size(), CV_8UC3 );
-
-    cv::circle( tresholdedFrame, mc, 5, color, -1, 8, 0 );
-
-
-}
-
-// if(debugMonitor){ // Wierd stuff
+// if(debugMonitor){
 //   // this is onlu needed if the users want to see whats going on.
 //   
 //   
-//     cv::cvtColor(submatrix,colorFrame,CV_BayerBG2RGB,0);
-//    // cv::cvtColor(colorFrame, grey, CV_RGB2GRAY );
-//   
 //     // Draw it - convert to RGB to we can draw on it with colors
-//    // cv::cvtColor(tresholdedFrame, tresholdedFrame, CV_GRAY2RGB);
+//     cv::cvtColor(tresholdedFrame, tresholdedFrame, CV_GRAY2RGB);
 //     //cv::Mat drawing = cv::Mat::zeros( tresholdedFrame.size(), CV_8UC3 );
 // 
-//     cv::circle( colorFrame, mc, 5, color, -1, 8, 0 );
+//     cv::circle( tresholdedFrame, mc, 5, color, -1, 8, 0 );
 // 
 // 
 // }
+
+if(debugMonitor){ // Wierd stuff
+  // this is onlu needed if the users want to see whats going on.
+  
+  
+    cv::cvtColor(submatrix,colorFrame,CV_BayerBG2RGB,0);
+   // cv::cvtColor(colorFrame, grey, CV_RGB2GRAY );
+  
+    // Draw it - convert to RGB to we can draw on it with colors
+   // cv::cvtColor(tresholdedFrame, tresholdedFrame, CV_GRAY2RGB);
+    //cv::Mat drawing = cv::Mat::zeros( tresholdedFrame.size(), CV_8UC3 );
+
+    cv::circle( colorFrame, mc, 5, color, -1, 8, 0 );
+
+
+}
 
  
 // Calculate distance from center of image
@@ -494,157 +577,46 @@ distY = centerOfFrame.y-mc.y;
  
 cameraError.x = distX;
 cameraError.y = distY; 
- 
 
 
-
-/* 
- OLD STUFF BELOW
- 
- 
- */
-
-// cv::Canny( tresholdedFrame, tmp, cannyMin, cannyMin*2, 3 );
-// 
-// cv::findContours(tmp,contours,hierarchy,CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE, cv::Point(0, 0));
-// 
-// int blablalba = 0 ;
-// 
-//  /// Get the moments
-//   std::vector<cv::Moments> mu(contours.size() );
-//   for( int i = 0; i < contours.size(); i++ )
-//      { mu[i] = moments( contours[i], false ); }
-// 
-//   ///  Get the mass centers:
-//   std::vector<cv::Point2f> mc( contours.size() );
-//   for( int i = 0; i < contours.size(); i++ )
-//      { mc[i] = cv::Point2f( mu[i].m10/mu[i].m00 , mu[i].m01/mu[i].m00 ); }
-// 
-//  
-//     std::vector<cv::Rect> boundRect( contours.size() );
-//     std::vector<std::vector<cv::Point> > contours_poly( contours.size() );
-// // Draw some countours, and maybe some bounding box
-//  
-//  
-// cv::Mat drawing = cv::Mat::zeros( tresholdedFrame.size(), CV_8UC3 );
-// 
-// 
-// cv::Point centerOfBlock;
-// 
-//   for( int i = 0; i< contours.size(); i++ )
-//      {
-// 
-// 	// Filter out small areas, and filter out contours that are holes 
-// 	// See http://stackoverflow.com/questions/8461612/using-hierarchy-in-findcontours-in-opencv
-//        if(cv::contourArea(contours[i]) < 200  ){
-// 	
-// 	 
-//       }else{
-//      
-//        
-//        cv::Scalar color = cv::Scalar( 0,255,0 );
-// 	//draw center of mass
-//       cv::circle( drawing, mc[i], 5, color, -1, 8, 0 );
-// 	
-// 	
-// 	cv::Point xx = cv::Point(boundRect[i].tl().x+(boundRect[i].width/2),boundRect[i].tl().y+(boundRect[i].height/2));
-// 	//cv::circle( drawing, xx, 2, color, -1, 8, 0 );
-// 	 
-// 	centerOfBlock = mc[i];
-// 	
-// 	
-//       }
-//      }
-//      
-//      
-// 
-//   /*
-//    * Calculate distance. 
-//    
-//    */
-//   
-//   
-//      
-//    cv::Size s = tresholdedFrame.size(); 
-//      
-//    cv::Point centerOfFrame = cv::Point(s.width/2,s.height/2);  
-//      
-//    float distX = centerOfFrame.x-centerOfBlock.x;
-//    
-//    float distY = centerOfFrame.y-centerOfBlock.y;
-//    
-//    if(centerOfBlock.x == 0 || centerOfBlock.y == 0 || (fabs(distX) < 3 && fabs(distY) < 3)){
-// 	    
-//   
-// 
-//      
-//   }else{
-//     
-// 
-//    // cout << "(Dist X, Dist Y) " << distX << ", " << distY << endl;
-//   
-//     cameraError.x = distX;
-//     cameraError.y = distY;
-//     
-//   //  std::cout << outss << std::endl;
-// /*cmdData tmp;
-// 
-// tmp.x = x_out;
-// tmp.y = y_out;
-// tmp.z = 0;
-// tmp.r = 0;
-// tmp.p =0; 
-// tmp.ya =0;
-// tmp.a = a_out;
-// tmp.t_min = t_min_out;
-// tmp.distX = distX;
-// tmp.distY = distY;
-// 
-// cmd.push_back(tmp);
-// */
-//     
-//     
-//   }
-
-   
-  
-/* END OLD STUFF */
-   
-     
-
- 
-
+tmrProcessing.setStop();
+cl.processing = tmrProcessing.elapsedTimeus();
+tmrIdle.setStart();
+// View part
 
   if(!frame .data) break;
 
 
-  if(debugMonitor){
-    // Show the iamge to the user
-	cv::imshow("Thresholded",tresholdedFrame); // Uncomment this line to see the actual picture. It will give an unsteady FPS
-
-
-      cv::imshow("Color",grey); // Uncomment this line to see the actual picture. It will give an unsteady FPS
-
-      //cv::imshow( "Center", drawing );
-
-      if(cv::waitKey(1) >= 27){ break;  } // We wait 1ms - so that the frame can be drawn. break on ESC
-
-  }
-  
-  
-//     if(debugMonitor){ // Wierd stuff
+//   if(debugMonitor){
 //     // Show the iamge to the user
 // 	cv::imshow("Thresholded",tresholdedFrame); // Uncomment this line to see the actual picture. It will give an unsteady FPS
 // 
 // 
-//       cv::imshow("Color",colorFrame); // Uncomment this line to see the actual picture. It will give an unsteady FPS
+//       cv::imshow("Color",grey); // Uncomment this line to see the actual picture. It will give an unsteady FPS
 // 
 //       //cv::imshow( "Center", drawing );
 // 
 //       if(cv::waitKey(1) >= 27){ break;  } // We wait 1ms - so that the frame can be drawn. break on ESC
 // 
 //   }
+  
+  
+    if(debugMonitor){ // Wierd stuff
+    // Show the iamge to the user
+	cv::imshow("Thresholded",tresholdedFrame); // Uncomment this line to see the actual picture. It will give an unsteady FPS
 
+
+      cv::imshow("Color",colorFrame); // Uncomment this line to see the actual picture. It will give an unsteady FPS
+
+      //cv::imshow( "Center", drawing );
+
+      if(cv::waitKey(1) >= 27){ break;  } // We wait 1ms - so that the frame can be drawn. break on ESC
+
+  }
+
+  
+  
+  
 
 }
 

@@ -90,6 +90,8 @@ for(cameraLog_sz i = 1; i != size; ++i){
   << "," << data[i].thresholding
   << "," << data[i].moments
   << "," << data[i].area
+  << "," << data[i].processing
+  << "," << data[i].idle
   << endl;
   // Close the file stream explicitly
 

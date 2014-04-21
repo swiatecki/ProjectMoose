@@ -4,6 +4,9 @@ cd /misc/shome/ex16/_Bachelor/Code/Tests/CModel01;
 % 59 Hz
 T = 0.01695;
 
+%56 Hz
+T = 0.01786;
+
 intrinsic = 779.280;
 height=0.37; %37 cm
 radius = 0.60;

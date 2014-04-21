@@ -35,6 +35,8 @@ uint64_t colorConversion;
 uint64_t thresholding;
 uint64_t moments;
 uint64_t area;
+uint64_t processing;
+uint64_t idle;
 
 
 cameraLog(){};
