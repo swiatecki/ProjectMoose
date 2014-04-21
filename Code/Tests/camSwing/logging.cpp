@@ -68,3 +68,38 @@ for(data_sz i = 0; i != size; ++i){
 
 
 }
+
+
+void writeCameraLog(vector<cameraLog>& data, string filename)
+{
+
+  cameraLog_sz size = data.size();
+
+ofstream a_file (filename.c_str(),ios::trunc);
+
+a_file.precision(15);
+
+// Skips first log entry. !! This to avoid "0-measurements"
+
+
+for(cameraLog_sz i = 1; i != size; ++i){
+  
+  a_file<< data[i].deltaus 
+  << "," << data[i].getFrame
+  << "," << data[i].colorConversion
+  << "," << data[i].thresholding
+  << "," << data[i].moments
+  << "," << data[i].area
+  << endl;
+  // Close the file stream explicitly
+
+
+}
+
+  a_file.close();
+  
+  
+  
+  
+  
+}

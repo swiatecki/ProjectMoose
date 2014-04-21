@@ -78,7 +78,28 @@ int areaOfObject;
  
 
 
+string type2str(int type) {
+  string r;
 
+  uchar depth = type & CV_MAT_DEPTH_MASK;
+  uchar chans = 1 + (type >> CV_CN_SHIFT);
+
+  switch ( depth ) {
+    case CV_8U:  r = "8U"; break;
+    case CV_8S:  r = "8S"; break;
+    case CV_16U: r = "16U"; break;
+    case CV_16S: r = "16S"; break;
+    case CV_32S: r = "32S"; break;
+    case CV_32F: r = "32F"; break;
+    case CV_64F: r = "64F"; break;
+    default:     r = "User"; break;
+  }
+
+  r += "C";
+  r += (chans+'0');
+
+  return r;
+}
 
 
 
@@ -291,7 +312,11 @@ void goToStart(){
 
 void *cameraThread(void *arg){
   
- 
+
+  Timing tmr0;
+  Timing tmrFrame;
+  vector<cameraLog> camLog;
+  
 std::vector<cmdData> cmd;
   cv::Mat frame; 
   
@@ -299,11 +324,11 @@ std::vector<cmdData> cmd;
 
 cv::namedWindow("Thresholded", CV_WINDOW_AUTOSIZE); //create a window with the name "HSV"
 //cv::namedWindow( "Contours", CV_WINDOW_AUTOSIZE );
-int initShutter = 484;
+int initShutter = 181;
 //int initShutter = 0;
 
 int shutterVal = initShutter;
-int cannyMin = 18;
+int cannyMin = 60;
 
 int blockSize = 89;
 
@@ -337,14 +362,42 @@ cap.set(CV_CAP_PROP_FPS,fps);
 cap.set(CV_CAP_PROP_GAMMA,0);
 cap.set(CV_CAP_PROP_GAIN,30);
 
+
+
+
+tmr0.setStart(); // Init it
+
+cv::Rect roi = cv::Rect(0,0,640,360);
+
+cv::Mat submatrix;
+cv::Moments mu;
+cv::Point2f mc;
+
+cv::Scalar color = cv::Scalar( 0,255,0 );
+float distX,distY;
+
+cv::Point centerOfFrame;
+cv::Size s;
+
+cameraLog cl;
+
+
+
 while(runState){
 
+ tmr0.setStop();
  
+ cl.deltaus =  tmr0.elapsedTimeus();
+ // compact log entry
+ camLog.push_back(cl);
+ 
+ tmr0.setStart();
 cap >> frame;
 
-
-std::vector<std::vector<cv::Point> > contours;
-std::vector<cv::Vec4i> hierarchy;
+tmr0.setStop();
+cl.getFrame = tmr0.elapsedTimeus();
+//std::vector<std::vector<cv::Point> > contours;
+//std::vector<cv::Vec4i> hierarchy;
 
 
 // Get color image, decode bayer BGGR.  
@@ -352,11 +405,25 @@ cv::cvtColor(frame,colorFrame,CV_BayerBG2RGB,0);
 cv::cvtColor(colorFrame, grey, CV_RGB2GRAY );
 
 
-// Remove gripper from img
-cv::Rect roi = cv::Rect(0,0,640,360);
-cv::Mat submatrix = cv::Mat(grey,roi);
-//submatrix.setTo(cv::Scalar(255));
+tmr0.setStop();
+cl.colorConversion = tmr0.elapsedTimeus();
 
+
+
+
+// Remove gripper from img
+
+submatrix = cv::Mat(grey,roi);
+
+//cout << "Rows X Cols: " << frame.rows << " x " << frame.cols << endl;
+
+//string ty =  type2str( colorFrame.type() );
+//printf("Matrix: %s %dx%d \n", ty.c_str(), colorFrame.cols, colorFrame.rows );
+
+// TRY: using raw image..
+//submatrix = cv::Mat(frame,roi);
+
+// Threshold it. The black dot becomes white. (NIBARY_INV)
 cv::threshold(submatrix,tresholdedFrame,cannyMin,255,cv::THRESH_BINARY_INV);
 
 if(blockSize % 2 == 0){
@@ -367,35 +434,63 @@ if(blockSize % 2 == 0){
 
 // cv::adaptiveThreshold(submatrix,tresholdedFrame,255,cv::ADAPTIVE_THRESH_GAUSSIAN_C,cv::THRESH_BINARY_INV,blockSize,0);
 
+tmr0.setStop();
+cl.thresholding = tmr0.elapsedTimeus();
 
 
-cv::Moments mu;
 
 mu = cv::moments(tresholdedFrame,true);
 
+
+tmr0.setStop();
+cl.moments = tmr0.elapsedTimeus();
+
+
 // Find center
-cv::Point2f mc = cv::Point2f( mu.m10/mu.m00 , mu.m01/mu.m00 );
+mc = cv::Point2f( mu.m10/mu.m00 , mu.m01/mu.m00 );
 
 // Count non zero pixels. Used for determining if we are screwed (getting large "white" areas.)
 cameraError.areaOfObject =  cv::countNonZero(tresholdedFrame);
 
+tmr0.setStop();
+cl.area = tmr0.elapsedTimeus();
 
-// Draw it - convert to RGB to we can draw on it with colors
-cv::cvtColor(tresholdedFrame, tresholdedFrame, CV_GRAY2RGB);
-//cv::Mat drawing = cv::Mat::zeros( tresholdedFrame.size(), CV_8UC3 );
-cv::Scalar color = cv::Scalar( 0,255,0 );
-cv::circle( tresholdedFrame, mc, 5, color, -1, 8, 0 );
+if(debugMonitor){
+  // this is onlu needed if the users want to see whats going on.
+  
+  
+    // Draw it - convert to RGB to we can draw on it with colors
+    cv::cvtColor(tresholdedFrame, tresholdedFrame, CV_GRAY2RGB);
+    //cv::Mat drawing = cv::Mat::zeros( tresholdedFrame.size(), CV_8UC3 );
+
+    cv::circle( tresholdedFrame, mc, 5, color, -1, 8, 0 );
 
 
+}
 
+// if(debugMonitor){ // Wierd stuff
+//   // this is onlu needed if the users want to see whats going on.
+//   
+//   
+//     cv::cvtColor(submatrix,colorFrame,CV_BayerBG2RGB,0);
+//    // cv::cvtColor(colorFrame, grey, CV_RGB2GRAY );
+//   
+//     // Draw it - convert to RGB to we can draw on it with colors
+//    // cv::cvtColor(tresholdedFrame, tresholdedFrame, CV_GRAY2RGB);
+//     //cv::Mat drawing = cv::Mat::zeros( tresholdedFrame.size(), CV_8UC3 );
+// 
+//     cv::circle( colorFrame, mc, 5, color, -1, 8, 0 );
+// 
+// 
+// }
 
  
 // Calculate distance from center of image
 
-cv::Size s = tresholdedFrame.size(); 
-cv::Point centerOfFrame = cv::Point(s.width/2,s.height/2);  
-float distX = centerOfFrame.x-mc.x;
-float distY = centerOfFrame.y-mc.y;
+s = tresholdedFrame.size(); 
+centerOfFrame = cv::Point(s.width/2,s.height/2);  
+distX = centerOfFrame.x-mc.x;
+distY = centerOfFrame.y-mc.y;
  
 cameraError.x = distX;
 cameraError.y = distY; 
@@ -520,36 +615,57 @@ cameraError.y = distY;
  
 
 
-if(!frame .data) break;
+  if(!frame .data) break;
 
 
-if(debugMonitor){
+  if(debugMonitor){
+    // Show the iamge to the user
+	cv::imshow("Thresholded",tresholdedFrame); // Uncomment this line to see the actual picture. It will give an unsteady FPS
+
+
+      cv::imshow("Color",grey); // Uncomment this line to see the actual picture. It will give an unsteady FPS
+
+      //cv::imshow( "Center", drawing );
+
+      if(cv::waitKey(1) >= 27){ break;  } // We wait 1ms - so that the frame can be drawn. break on ESC
+
+  }
   
-  cv::imshow("Thresholded",tresholdedFrame); // Uncomment this line to see the actual picture. It will give an unsteady FPS
+  
+//     if(debugMonitor){ // Wierd stuff
+//     // Show the iamge to the user
+// 	cv::imshow("Thresholded",tresholdedFrame); // Uncomment this line to see the actual picture. It will give an unsteady FPS
+// 
+// 
+//       cv::imshow("Color",colorFrame); // Uncomment this line to see the actual picture. It will give an unsteady FPS
+// 
+//       //cv::imshow( "Center", drawing );
+// 
+//       if(cv::waitKey(1) >= 27){ break;  } // We wait 1ms - so that the frame can be drawn. break on ESC
+// 
+//   }
 
 
-cv::imshow("Color",grey); // Uncomment this line to see the actual picture. It will give an unsteady FPS
-
-//cv::imshow( "Center", drawing );
 }
 
 
 
 
-if(cv::waitKey(1) >= 27){ break;  } // We wait 1ms - so that the frame can be drawn. break on ESC
 
-
-
-}
 
 cv::destroyWindow("Color"); //destroy the window with the name, "MyWindow"
 cv::destroyWindow("Thresholded"); 
 
 
+writeCameraLog(camLog,"camLog.txt");
 
 }
 
-// ROBOT !! 
+/* 
+ * 
+ * ROBOT TREAD BELOW
+ * 
+ * */
 
 
 void* robotThread(void* arg)
@@ -672,7 +788,8 @@ if(tmp.qActual[0] > 1.2){
   
   // keep swinging
   
-  signal = -1.2;
+  //signal = -1.2;
+  signal = -1;
   
 }else{
   

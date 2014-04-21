@@ -3,6 +3,8 @@
 #include <string>
 #include <iostream>
 #include <fstream>
+#include <core/types_c.h>
+#include <stdint.h>
 
 #ifndef LOGGING_H
 #define LOGGING_H
@@ -25,7 +27,29 @@ double cameraDistXm;
 
 typedef std::vector<slogData>::size_type data_sz;
 
+struct cameraLog{
+
+uint64_t deltaus;
+uint64_t getFrame;
+uint64_t colorConversion;
+uint64_t thresholding;
+uint64_t moments;
+uint64_t area;
+
+
+cameraLog(){};
+// Constructor, here using "initliazation list."
+cameraLog(uint64_t _deltaus) : deltaus(_deltaus){};
+
+
+
+};
+
+
+typedef std::vector<cameraLog>::size_type cameraLog_sz;
 
 void writeLog(std::vector<slogData> & data,std::string filename);
+
+void writeCameraLog(std::vector<cameraLog> & data,std::string filename);
 
 #endif

@@ -11,10 +11,13 @@ PROGS = camSwing.o logging.o  ../../Base/Network.o ../../Base/RobotCommander.o .
 OUT = camSwing 
 
 all: $(PROGS) 
-	g++ -c -g $(CPPFLAGS) $(CXXFLAGS) $(PROGS) -O0
-	g++ -g $(PROGS) $(LIBS) -lcom_err -lpthread -O0 -o $(OUT)
+	g++ -c $(CPPFLAGS) $(CXXFLAGS) $(PROGS) -O3
+	g++ $(PROGS) $(LIBS) -lcom_err -lpthread -O3 -o $(OUT)
 
-
+	
+debug: $(PROGS) 
+	g++ -c -g $(CPPFLAGS) $(CXXFLAGS) $(PROGS) -Og
+	g++ -g $(PROGS) $(LIBS) -lcom_err -lpthread -Og -o $(OUT)
 
 
 clean : 
