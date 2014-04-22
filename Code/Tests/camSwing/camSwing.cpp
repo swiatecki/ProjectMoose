@@ -33,6 +33,7 @@ int debugMonitor =0;
 int noRobot = 0;
 int noCamera = 0;
 int verbose =0;
+int saveImgs =0;
 
 void ctrlCHandler(int s);
 
@@ -69,7 +70,7 @@ double x,y,z,r,p,ya,a,t_min,distX,distY;
 
 struct coord{
 
-double x,y;
+int x,y;
 int areaOfObject;
 int ready;
 }cameraError;
@@ -135,6 +136,11 @@ int main(int argc, char *argv[]){
 	  cout << " Debug enabled " << endl;
       }
       
+        if(string(argv[i]) == "--saveImgs" || string(argv[i]) == "-s"){
+		  saveImgs = 1;
+	  cout << " Saving images " << endl;
+      }
+      
       if(string(argv[i]) == "--verbose" || string(argv[i]) == "-v"){
 		  verbose = 1;
 	  cout << " Verbose " << endl;
@@ -150,6 +156,7 @@ int main(int argc, char *argv[]){
 	  cout << "Usage: " <<endl;
 	  cout << "-n or --norobot: \t dont move robot. Good for calibrating camera. " << endl;
 	  cout << "-d or --debugmonitor: \t Shows camera/vision output. May slow down robot " << endl;
+	  cout << "-s or --saveImgs: \t Save camera imgs to imgs/" << endl;
 	  cout << "-v or --verbose: \t Alot of nice debugging info" << endl;
 	  cout << "--log: \t Where to save the log(default: defaultLog.txt) , ex: --log somelog.txt" << endl;
 	  exit(0);
@@ -207,6 +214,8 @@ n.stopNet();
 n.startNet();
 
 cameraError.ready =0;
+cameraError.x = -999;
+cameraError.y = -999;
 // Spawn a cameraThread
   
   pthread_t cameraThreadID;
@@ -324,11 +333,14 @@ std::vector<cmdData> cmd;
 
 cv::namedWindow("Thresholded", CV_WINDOW_AUTOSIZE); //create a window with the name "HSV"
 //cv::namedWindow( "Contours", CV_WINDOW_AUTOSIZE );
-int initShutter = 280;
-//int initShutter = 0;
+// int initShutter = 952;
+int initShutter = 174; // max 800 for 60 fps
 
 int shutterVal = initShutter;
-int cannyMin = 17;
+// int cannyMin = 26;
+int cannyMin = 34;
+
+
 
 int blockSize = 89;
 
@@ -381,7 +393,13 @@ cv::Size s;
 
 cameraLog cl;
 
+long picNo =0;
+std::ostringstream filen;
 
+tmrFrame.setStart();
+
+uint64_t old_tmr = 0;
+uint64_t newtime = 0,difftmr = 0;
 
 while(runState){
 
@@ -391,17 +409,28 @@ while(runState){
  
  cl.idle = cl.deltaus-cl.processing;
  camLog.push_back(cl);
-
  
+ if(!cameraError.ready && cl.deltaus < 20000 ){
+   //it took less than 50 hz to get the frame. Camera should be up
+   
+   cameraError.ready = 1;
+}
+
+ tmr0.setStop();
+
+
  tmr0.setStart();
 cap >> frame;
 
+tmrFrame.setStop();
 
+newtime = tmrFrame.elapsedTimeus();
 
+difftmr = newtime-old_tmr;
+old_tmr = newtime;
 
-
-tmr0.setStop();
-cl.getFrame = tmr0.elapsedTimeus();
+// cl.getFrame = tmr0.elapsedTimeus();
+cl.getFrame = difftmr;
 
 
 tmrProcessing.setStart();
@@ -538,45 +567,60 @@ cameraError.areaOfObject =  cv::countNonZero(tresholdedFrame);
 tmr0.setStop();
 cl.area = tmr0.elapsedTimeus();
 
-// if(debugMonitor){
-//   // this is onlu needed if the users want to see whats going on.
-//   
-//   
-//     // Draw it - convert to RGB to we can draw on it with colors
-//     cv::cvtColor(tresholdedFrame, tresholdedFrame, CV_GRAY2RGB);
-//     //cv::Mat drawing = cv::Mat::zeros( tresholdedFrame.size(), CV_8UC3 );
-// 
-//     cv::circle( tresholdedFrame, mc, 5, color, -1, 8, 0 );
-// 
-// 
-// }
-
-if(debugMonitor){ // Wierd stuff
+if(debugMonitor){
   // this is onlu needed if the users want to see whats going on.
   
   
-    cv::cvtColor(submatrix,colorFrame,CV_BayerBG2RGB,0);
-   // cv::cvtColor(colorFrame, grey, CV_RGB2GRAY );
-  
     // Draw it - convert to RGB to we can draw on it with colors
-   // cv::cvtColor(tresholdedFrame, tresholdedFrame, CV_GRAY2RGB);
+    cv::cvtColor(tresholdedFrame, tresholdedFrame, CV_GRAY2RGB);
     //cv::Mat drawing = cv::Mat::zeros( tresholdedFrame.size(), CV_8UC3 );
 
-    cv::circle( colorFrame, mc, 5, color, -1, 8, 0 );
+    cv::circle( tresholdedFrame, mc, 5, color, -1, 8, 0 );
+    
+     cv::cvtColor(grey, grey, CV_GRAY2RGB);
+    cv::circle( grey, mc, 5, color, -1, 8, 0 );
 
 
 }
+
+// if(debugMonitor){ // Wierd stuff
+//   // this is onlu needed if the users want to see whats going on.
+//   
+//   
+//     cv::cvtColor(submatrix,colorFrame,CV_BayerBG2RGB,0);
+//    // cv::cvtColor(colorFrame, grey, CV_RGB2GRAY );
+//   
+//     // Draw it - convert to RGB to we can draw on it with colors
+//    // cv::cvtColor(tresholdedFrame, tresholdedFrame, CV_GRAY2RGB);
+//     //cv::Mat drawing = cv::Mat::zeros( tresholdedFrame.size(), CV_8UC3 );
+// 
+//     cv::circle( colorFrame, mc, 5, color, -1, 8, 0 );
+// 
+// 
+// }
 
  
 // Calculate distance from center of image
 
 s = tresholdedFrame.size(); 
 centerOfFrame = cv::Point(s.width/2,s.height/2);  
+
 distX = centerOfFrame.x-mc.x;
 distY = centerOfFrame.y-mc.y;
  
-cameraError.x = distX;
-cameraError.y = distY; 
+
+if(mc.x != mc.x){
+  // This fixes if mc.x or mc.y becomes NaN.
+  //Should only! happen in camswing
+  
+  
+  distX =-999;
+  distY =-999;
+  
+}
+
+cameraError.x = (int)distX;
+cameraError.y = (int)distY; 
 
 
 tmrProcessing.setStop();
@@ -587,20 +631,20 @@ tmrIdle.setStart();
   if(!frame .data) break;
 
 
-//   if(debugMonitor){
-//     // Show the iamge to the user
-// 	cv::imshow("Thresholded",tresholdedFrame); // Uncomment this line to see the actual picture. It will give an unsteady FPS
-// 
-// 
-//       cv::imshow("Color",grey); // Uncomment this line to see the actual picture. It will give an unsteady FPS
-// 
-//       //cv::imshow( "Center", drawing );
-// 
-//       if(cv::waitKey(1) >= 27){ break;  } // We wait 1ms - so that the frame can be drawn. break on ESC
-// 
-//   }
+  if(debugMonitor){
+    // Show the iamge to the user
+	cv::imshow("Thresholded",tresholdedFrame); // Uncomment this line to see the actual picture. It will give an unsteady FPS
+
+
+      cv::imshow("Color",grey); // Uncomment this line to see the actual picture. It will give an unsteady FPS
+
+      //cv::imshow( "Center", drawing );
+
+      if(cv::waitKey(1) >= 27){ break;  } // We wait 1ms - so that the frame can be drawn. break on ESC
+
+  }
   
-  
+/*  
     if(debugMonitor){ // Wierd stuff
     // Show the iamge to the user
 	cv::imshow("Thresholded",tresholdedFrame); // Uncomment this line to see the actual picture. It will give an unsteady FPS
@@ -612,9 +656,24 @@ tmrIdle.setStart();
 
       if(cv::waitKey(1) >= 27){ break;  } // We wait 1ms - so that the frame can be drawn. break on ESC
 
-  }
+  }*/
 
+
+if(saveImgs){
+    // Draw the circle
+   cv::cvtColor(grey, grey, CV_GRAY2RGB);
+    cv::circle( grey, mc, 5, color, -1, 8, 0 );
   
+  
+    filen.str("");
+    filen.clear();
+    filen << "imgs/img" << setfill('0') << setw(5)  << picNo << ".ppm";
+      std::string imgname = filen.str();
+      
+      cv::imwrite(imgname,grey);
+      
+      picNo++;
+  }
   
   
 
@@ -643,6 +702,9 @@ writeCameraLog(camLog,"camLog.txt");
 void* robotThread(void* arg)
 {
  
+
+  
+  
   Timing timer0;
   
   Guppy g;
@@ -699,8 +761,8 @@ int counter = 0;
    cout << "CRITIAL ERROR!!! - Network fail. Bytes recv: " << byte_count << endl;
    break;
 }
- 
- 
+  slogData tmp;
+  tmp.cameraDistXpx = cameraError.x;
 
   timer0.setStop();
  
@@ -720,7 +782,7 @@ int counter = 0;
   
  // Add to Log
  
- slogData tmp;
+
  
  
   tmp.robotTime = rd1.getTime(); // Returns double
@@ -736,13 +798,16 @@ int counter = 0;
  rd1.getTool(tmp.tool);
  
  
- tmp.cameraDistXm = g.px2m(cameraError.x,g.getActualHeight(tmp.tool[2]));
- tmp.cameraDistXpx = cameraError.x;
+ tmp.cameraDistXm = g.px2m(tmp.cameraDistXpx,g.getActualHeight(tmp.tool[2]));
+
+ 
+ pixeldist = tmp.cameraDistXpx;
+ meters = tmp.cameraDistXm;
   
    //cout << "qactual tmp: " << tmp.qActual[0] << "," << tmp.qActual[1] << ","<< tmp.qActual[2] << ","<< tmp.qActual[3] << ","<< tmp.qActual[4] << "," << tmp.qActual[5] << "," << endl;
-  
+  if(cameraError.ready == 1) {
   log.push_back(tmp);
-
+  }
     
  
   /* 
@@ -760,8 +825,8 @@ if(tmp.qActual[0] > 1.2){
   
   // keep swinging
   
-  //signal = -1.2;
-  signal = -1;
+ // signal = -0.1;
+   signal = -2.5;
   
 }else{
   
@@ -819,7 +884,7 @@ std::string cmd = strs.str();
     
     sleeper.setStop();
     
-    if(sleeper.elapsedTimeus() >= 16950 || securityStop){ // 20000 is OK, 16700 is OK, 
+    if((sleeper.elapsedTimeus() >= 16950 && cameraError.ready ==1) || securityStop){ // 20000 is OK, 16700 is OK, 
       
           
     robot.addCmd(cmd,0);

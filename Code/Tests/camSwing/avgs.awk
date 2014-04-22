@@ -24,8 +24,8 @@ timeout3 += 1;
 }
 
 
-if($1 >= max){
-max = $1;
+if($2 >= max){
+max = $2;
 #print max
 }
 
@@ -37,13 +37,13 @@ END {
 
 NRx = NR-1;
  print "Total: " total/NRx;
-print "getFrame:(experimental):" frame/NRx;
- print "colorConversion: @" cc/NRx " - delta: " cc/NRx-frame/NRx;
+print "tmrFrame:(experimental):" frame/NRx;
+ print "\n colorConversion: @" cc/NRx
 print "Thresholding: @" thres/NRx " - delta: " thres/NRx-cc/NRx;
 print "Moment: @" moment/NRx " - delta: " moment/NRx-thres/NRx;
 print "area: @" area/NRx " - delta: " area/NRx-moment/NRx;
 print "processing(total): " processing/NRx 
-print "idle (experimental) : " idle/NRx 
+print "\n idle (experimental) : " idle/NRx 
 print "Samples taking more than 16666 ( 60hz): " timeout;
 print "Samples taking more than 16950 ( 59 Hz): " timeout2;
 print "Samples taking more than 17240 ( 58 Hz): " timeout3;

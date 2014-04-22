@@ -1,11 +1,12 @@
 clc;
-format shortG
-delayLog = load('saveLogs/swing1_5rads.txt');
+close all;
+clear delayLog;
+%format shortG
 
-delayLog = load('saveLogs/swing1_2rads.txt');
-
-delayLog = load('saveLogs/swing0_2rads.txt');
-delayLog = load('saveLogs/swing1rads.txt');
+%delayLog = load('saveLogs/swing0_7rads.txt');
+%delayLog = load('saveLogs/swing0_5rads.txt');
+%delayLog = load('saveLogs/swing0_1rads.txt');
+delayLog = load('defaultLog.txt');
 
 
 qActual = delayLog(:,3:8); % Actual Position
@@ -24,7 +25,6 @@ base = qActual(:,1);
 distPx = delayLog(:,39);
 distm = delayLog(:,40);
 
-%%
 figure()
-plot(base,distPx)
-ylim([-500 500])
+stem(base,distPx)
+set(gca,'XDir','reverse')
