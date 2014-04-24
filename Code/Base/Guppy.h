@@ -19,7 +19,7 @@ public:
   double getActualHeight(double robotHeight);
   double getRadius(double robotX,double robotY);
 
-cv::Mat histogramGS(cv::Mat image);
+cv::Mat histogramGS(cv::Mat image, int threshold) ;
   
   
 private:

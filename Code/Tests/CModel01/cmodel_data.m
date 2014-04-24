@@ -71,4 +71,10 @@ qddActual = diff(qdActual)/0.008;
 
 robotTime = delayLog(:,1);
 
+%%
+
+[num, den] = dlinmod('step_cmodel01_cl',T);
+sys = tf(num,den,T);
+
+step(sys)
 

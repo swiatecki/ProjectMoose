@@ -26,6 +26,7 @@
 #include "../../Base/Timing.cpp"
 #include "../../Base/Guppy.h"
 
+#define _USE_MATH_DEFINES
 
 using namespace std;
 
@@ -35,6 +36,10 @@ int noCamera = 0;
 int verbose =0;
 int saveImgs =0;
 int histogram =0;
+int controller =0;
+
+std::map<int,string> errMsg;
+
 
 
 void ctrlCHandler(int s);
@@ -63,7 +68,9 @@ void shutterCB(int pos, void* param);
  
  RobotCommander robot;
  slogData tmp;
-  bool securityStop = false;
+ 
+bool securityStop = false;
+string reason;  
  
  
 struct cmdData{
@@ -116,7 +123,8 @@ string type2str(int type) {
  
 int main(int argc, char *argv[]){
 
-  
+  errMsg[0] = "AoO to large";
+  errMsg[1] = "Out of operation area";
  
   
   if(argc < 2){
@@ -159,6 +167,11 @@ int main(int argc, char *argv[]){
       if(string(argv[i]) == "--log"){
 	logfilename = argv[i+1];
 	  cout << " filename set to  " << argv[i+1] << endl;
+      }
+      
+       if(string(argv[i]) == "--controller "|| string(argv[i]) == "-c") {
+	controller = 1;
+	  cout << " Controller active. The loop has been closed" << endl;
       }
       
       if(string(argv[i]) == "--help" || string(argv[i]) == "-h"){
@@ -363,7 +376,7 @@ int initShutter = 174; // max 800 for 60 fps
 
 int shutterVal = initShutter;
 // int cannyMin = 26;
-int cannyMin = 34;
+int cannyMin = 43;
 
 
 
@@ -604,21 +617,7 @@ cameraError.areaOfObject =  cv::countNonZero(tresholdedFrame);
 tmr0.setStop();
 cl.area = tmr0.elapsedTimeus();
 
-if(debugMonitor){
-  // this is onlu needed if the users want to see whats going on.
-  
-  
-    // Draw it - convert to RGB to we can draw on it with colors
-    cv::cvtColor(tresholdedFrame, tresholdedFrame, CV_GRAY2RGB);
-    //cv::Mat drawing = cv::Mat::zeros( tresholdedFrame.size(), CV_8UC3 );
 
-    cv::circle( tresholdedFrame, mc, 5, color, -1, 8, 0 );
-    
-     cv::cvtColor(grey, grey, CV_GRAY2RGB);
-    cv::circle( grey, mc, 5, color, -1, 8, 0 );
-
-
-}
 
 // if(debugMonitor){ // Wierd stuff
 //   // this is onlu needed if the users want to see whats going on.
@@ -651,8 +650,8 @@ if(mc.x != mc.x){
   //Should only! happen in camswing
   
   
-  distX =-999;
-  distY =-999;
+  distX =-1;
+  distY =-1;
   
 }
 
@@ -676,20 +675,68 @@ tmrIdle.setStart();
    * 
    */
   
-  //base joint
-if(tmp.qActual[0] > 1.2){
   
-  // keep swinging
-  
- // signal = -0.1;
-   signal = -1;
-  
-}else{
-  
-  signal = 0;
+/* SWING PART */
+
+if(!controller){
+      //base joint
+    if(tmp.qActual[0] > 1.2){
+      
+      // keep swinging
+      
+    // signal = -0.1;
+      signal = -1;
+      
+    }else{
+      
+      signal = 0;
+    
+    }
+}
+
+/* END SWING*/
+
+/* ACTUAL CONTROLLER */
+if(controller){
+
+    signal = cameraError.x;
+pixeldist = signal;
+    // from pixels to m
+      signal = g.px2m(signal,g.getActualHeight(tmp.tool[2]));
+
+meters = signal;
+    // from m to radian
+      
+      signal = signal/g.getRadius(tmp.tool[0],tmp.tool[1]);
+      
+	
+    radians = signal;
+      
+      // Apply controller...
+      
+    signal = signal*10;
+      
+      nonLimitedSignal = signal;
+    
+      if(signal> 3.2){
+	signal = 3.2;
+      }else if(signal < -3.2){
+	
+	signal = -3.2;
+      }
+      
+      
+      
+      
+      if(signal < 0.07 && signal > 0 ){
+	signal = 0;
+      }else if(signal > -0.07 && signal < 0){
+	    signal = 0;
+      }
   
   
 }
+/* END ACTUAL CONTROLLER */
 
 
 std::ostringstream strs;  
@@ -744,18 +791,37 @@ cout << setprecision(9)
   
     if(histogram){
     
-  histo =  g.histogramGS(grey);
-    
-  cv::imshow("Histogram",histo);
-  
-  if(!debugMonitor){
-    if(cv::waitKey(1) >= 27){ break;  }
-  }
+      histo =  g.histogramGS(grey,cannyMin);
+	
       
+      
+      
+      cv::imshow("Histogram",histo);
+      
+      if(!debugMonitor){
+	if(cv::waitKey(1) >= 27){ break;  }
+      }
+	  
       
     }
   
   
+if(debugMonitor){
+  // this is onlu needed if the users want to see whats going on.
+  
+  
+    // Draw it - convert to RGB to we can draw on it with colors
+    cv::cvtColor(tresholdedFrame, tresholdedFrame, CV_GRAY2RGB);
+    //cv::Mat drawing = cv::Mat::zeros( tresholdedFrame.size(), CV_8UC3 );
+
+    cv::circle( tresholdedFrame, mc, 5, color, -1, 8, 0 );
+    
+     cv::cvtColor(grey, grey, CV_GRAY2RGB);
+    cv::circle( grey, mc, 5, color, -1, 8, 0 );
+
+
+}
+
 
   if(debugMonitor){
     // Show the iamge to the user
@@ -919,6 +985,23 @@ int counter = 0;
  rd1.getTool(tmp.tool);
  
  
+ // Check if rotation has added pi degrees?)
+ if(fabs(tmp.qActual[0]) > 3){
+   // 
+   
+   if(tmp.qActual[0] > 0){
+      tmp.qActual[0] -= 2*M_PI;
+     
+  }else{
+    tmp.qActual[0] += 2*M_PI;
+    
+  }
+   
+   
+}
+ 
+ 
+ 
  tmp.cameraDistXm = g.px2m(tmp.cameraDistXpx,g.getActualHeight(tmp.tool[2]));
 
  
@@ -950,14 +1033,25 @@ if(tmp.qActual[0] < 0.863 || tmp.qActual[0] > 2.157 || securityStop){
   // Out of bounds. Override commands
   strs << "stop(15)";
   securityStop = true;
- 
+  
+  
+  stringstream ss;
+
+ss << errMsg[1] << "@" << tmp.qActual[0];
+
+ reason = ss.str();
+  
 }
 else if(cameraError.areaOfObject > 200 ){
 
   // Probably seeing the table now
 strs << "stop(15)";
 securityStop = true;
+stringstream ss;
 
+ss << errMsg[0] << "@" << cameraError.areaOfObject;
+
+ reason = ss.str();
 }  
 
     
@@ -993,7 +1087,7 @@ securityStop = true;
   
    if(securityStop){
     
-    cout << endl << "SECURITY STOPPED (soft) " << endl;
+    cout << endl << "SECURITY STOPPED (soft) " << reason << endl;
     
   }
   

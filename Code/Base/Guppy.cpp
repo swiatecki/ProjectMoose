@@ -59,7 +59,7 @@ double Guppy::getRadius(double robotX, double robotY )
   
 }
 
-cv::Mat Guppy::histogramGS(cv::Mat image)
+cv::Mat Guppy::histogramGS(cv::Mat image, int threshold)
 {
   /* FROM
    * http://docs.opencv.org/doc/tutorials/imgproc/histograms/histogram_calculation/histogram_calculation.html
@@ -96,9 +96,17 @@ cv::normalize(_hist, _hist, 0, histImage.rows, cv::NORM_MINMAX, -1, cv::Mat() );
   {
       cv::line( histImage, cv::Point( bin_w*(i-1), hist_h - cvRound(_hist.at<float>(i-1)) ) ,
                        cv::Point( bin_w*(i), hist_h - cvRound(_hist.at<float>(i)) ),
-                       cv::Scalar( 255, 0, 0), 2, 8, 0  );
+                       cv::Scalar( 0, 255, 0), 2, 8, 0  );
   
   }
+  
+ 
+  // Draw threshold
+   cv::line( histImage, cv::Point( bin_w*(threshold-1), 0 ) ,
+                       cv::Point( bin_w*(threshold), hist_h ),
+                       cv::Scalar( 0, 0, 255), 2, 8, 0  );
+  
+  
 
 return histImage;
 }
