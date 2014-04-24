@@ -20,14 +20,13 @@ using namespace std;
 
 
 
-
 RobotCommander::RobotCommander(int * _socket){
   
     time1.tv_sec =0;
   time1.tv_nsec = 8000000; // 8 ms / 125 hz
   totalElapsedTicks = 0;
   elapsedTicks = 0;
-  socket = _socket;
+  socket  = _socket;
   handleDelay = true;
 }
 
@@ -98,6 +97,15 @@ void RobotCommander::sethandleDelay(bool setTo)
 {
 handleDelay = setTo;
 }
+
+
+
+
+void RobotCommander::cmd::setSocket(int* _socket)
+{
+socket = _socket;
+}
+
 
 
 

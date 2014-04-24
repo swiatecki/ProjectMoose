@@ -60,7 +60,7 @@ void shutterCB(int pos, void* param);
   
  RobotData rd1(RobotData::UR5_V1x5);
  
- 
+ RobotCommander robot;
  
  
 struct cmdData{
@@ -219,6 +219,17 @@ n.stopNet();
 
 
 n.startNet();
+
+
+//RobotCommander that is shared between threads
+
+  int socket = n.getSocket();
+  robot.setSocket(&socket);
+
+  bool off = false;
+  robot.sethandleDelay(off);
+
+//
 
 cameraError.ready =0;
 cameraError.x = -999;
@@ -731,8 +742,6 @@ writeCameraLog(camLog,"camLog.txt");
 void* robotThread(void* arg)
 {
  
-
-  
   
   Timing timer0;
   
@@ -759,11 +768,7 @@ int counter = 0;
  
  vector<slogData> log;
  
-  int socket = n.getSocket();
-  RobotCommander robot(&socket);
 
-  bool off = false;
-  robot.sethandleDelay(off);
 
   Timing sleeper;
   sleeper.setStart();

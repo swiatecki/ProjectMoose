@@ -5,26 +5,41 @@ cd /misc/shome/ex16/_Bachelor/Code/Tests/CModel01;
 T = 0.01695;
 
 %56 Hz
-T = 0.01786;
+%T = 0.01786;
 
-T = 2*T;
+
 
 intrinsic = 779.280;
 height=0.37; %37 cm
 radius = 0.60;
 magic = 0.0004748;
+%%
+
+%Modify our robot model to compy with 60 hz
+
+
+dPlant = c2d(tf([1],[1 0]),T) % integrator
+
+% 2 delays @ 125 = 1 @ 60
+delay = tf(1,[0 0 1 0],T)
+
+
+dPlantDelay = dPlant*delay
+
+%Husk: vi har et delay på 3(men eksperimentielt fundet at det passer bedre ved 2) - OG en integrator på 1 = z^4
+margin(dPlantDelay)
 
 %%
 
-[num, den] = dlinmod('cmodel01_ol',T,0,0.1);
+[num, den] = dlinmod('cmodel01_ol',T);
 sys = tf(num,den,T)
 
 margin(sys)
 
 
-%60 degrees gives us -94.9 dB
+%60 degrees gives us -26.2 dB
 format longG
-db2mag(28.2)
+db2mag(26.2)
 
 %% Test
 x = Simulink.BlockDiagram.getInitialState('cmodel01');

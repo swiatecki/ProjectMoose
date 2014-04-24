@@ -9,6 +9,7 @@ class RobotCommander{
   
 public:
   RobotCommander(int * _socket);
+  RobotCommander(){};
   void addCmd(std::string _command, int _maxTicks);
   int run();
   
@@ -21,7 +22,7 @@ public:
    
    cmd(int _maxTicks, std::string _theCommand): maxTicks(_maxTicks), theCommand(_theCommand){}
    
-   
+   void setSocket(int * _socket);
 
 };
 
