@@ -58,9 +58,12 @@ void shutterCB(int pos, void* param);
 
   string logfilename;
   
+  
  RobotData rd1(RobotData::UR5_V1x5);
  
  RobotCommander robot;
+ slogData tmp;
+  bool securityStop = false;
  
  
 struct cmdData{
@@ -380,7 +383,7 @@ cv::createTrackbar("BlockSize","Color",&blockSize,255,NULL,NULL);
 cv::Mat colorFrame;
 cv::Mat tresholdedFrame;
 cv::Mat hsvFrame;
-cv::Mat grey,tmp;
+cv::Mat grey;
 cv::Mat contourOutput;
 cv::Mat histo;
 
@@ -425,6 +428,15 @@ tmrFrame.setStart();
 
 uint64_t old_tmr = 0;
 uint64_t newtime = 0,difftmr = 0;
+
+
+ double signal=0,nonLimitedSignal=0,pixeldist=0,radians=0,meters=0;
+
+
+
+
+
+
 
 while(runState){
 
@@ -656,6 +668,80 @@ tmrIdle.setStart();
   if(!frame .data) break;
 
   
+  
+  /*
+   * 
+   *  START TRANSMIT COMMAND
+   * 
+   * 
+   */
+  
+  //base joint
+if(tmp.qActual[0] > 1.2){
+  
+  // keep swinging
+  
+ // signal = -0.1;
+   signal = -1;
+  
+}else{
+  
+  signal = 0;
+  
+  
+}
+
+
+std::ostringstream strs;  
+
+// Safety check is in the faster thread
+  
+if(!securityStop){
+strs << "speedj([" << signal <<  ", 0, 0, 0, 0, 0],15,1)";
+}
+  
+  
+std::string cmd = strs.str();  
+
+
+  if(!noRobot){
+    
+   
+    
+    if(cameraError.ready ==1 || securityStop){ // 20000 is OK, 16700 is OK, 
+      
+          
+    robot.addCmd(cmd,0);
+    robot.run();
+       
+
+      
+    }
+  
+}
+  
+if(verbose){
+  
+cout << cmd << endl;
+cout << setprecision(9) 
+<< "pixeldist : " << cameraError.x
+<< "; meter : " << tmp.cameraDistXm
+<< "; radians : " << radians 
+<<"; Non limited output : " << nonLimitedSignal 
+<<", Limited: " << signal
+<< ", AoO: "<< cameraError.areaOfObject << endl;
+
+ 
+}
+  
+    
+  /*
+   * 
+   *  END TRANSMIT COMMAND
+   * 
+   * 
+   */
+  
     if(histogram){
     
   histo =  g.histogramGS(grey);
@@ -728,6 +814,7 @@ cv::destroyWindow("Color"); //destroy the window with the name, "MyWindow"
 cv::destroyWindow("Thresholded"); 
 
 
+
 writeCameraLog(camLog,"camLog.txt");
 
 }
@@ -753,7 +840,7 @@ char buffer[rd1.getRecvLength()];
  
  double nonLimitedSignal,pixeldist,radians,meters;
 
- bool securityStop = false;
+
  
 int counter = 0;
 
@@ -795,7 +882,7 @@ int counter = 0;
    cout << "CRITIAL ERROR!!! - Network fail. Bytes recv: " << byte_count << endl;
    break;
 }
-  slogData tmp;
+  
   tmp.cameraDistXpx = cameraError.x;
 
   timer0.setStop();
@@ -835,8 +922,8 @@ int counter = 0;
  tmp.cameraDistXm = g.px2m(tmp.cameraDistXpx,g.getActualHeight(tmp.tool[2]));
 
  
- pixeldist = tmp.cameraDistXpx;
- meters = tmp.cameraDistXm;
+ //pixeldist = tmp.cameraDistXpx;
+ //meters = tmp.cameraDistXm;
   
    //cout << "qactual tmp: " << tmp.qActual[0] << "," << tmp.qActual[1] << ","<< tmp.qActual[2] << ","<< tmp.qActual[3] << ","<< tmp.qActual[4] << "," << tmp.qActual[5] << "," << endl;
   if(cameraError.ready == 1) {
@@ -844,32 +931,6 @@ int counter = 0;
   }
     
  
-  /* 
-   * 
-   * Controller
-   * 
-   * */
-  
-  
-// For this test, we don't use a controller. We just swing based on posistion'
-
-
-//base joint
-if(tmp.qActual[0] > 1.2){
-  
-  // keep swinging
-  
- // signal = -0.1;
-   signal = -2.5;
-  
-}else{
-  
-  signal = 0;
-  
-  
-}
-  
-  
   
   /* 
    * 
@@ -898,11 +959,7 @@ strs << "stop(15)";
 securityStop = true;
 
 }  
-else{
-  // Within area of operation. proceed
-  
-  strs << "speedj([" << signal <<  ", 0, 0, 0, 0, 0],15,1)";
-}
+
     
     
 /* End Safety check and stop */ 
@@ -910,7 +967,7 @@ else{
 
 
 
-std::string cmd = strs.str();
+
     
 
 
@@ -918,9 +975,9 @@ std::string cmd = strs.str();
     
     sleeper.setStop();
     
-    if((sleeper.elapsedTimeus() >= 16950 && cameraError.ready ==1) || securityStop){ // 20000 is OK, 16700 is OK, 
+    if(securityStop){ // 20000 is OK, 16700 is OK, 
       
-          
+     std::string cmd = strs.str();
     robot.addCmd(cmd,0);
     robot.run();
        
@@ -932,19 +989,7 @@ std::string cmd = strs.str();
   }
   
   
-  if(verbose){
-  
-cout << cmd << endl;
-cout << setprecision(9) 
-<< "pixeldist : " << pixeldist 
-<< "; meter : " << meters 
-<< "; radians : " << radians 
-<<"; Non limited output : " << nonLimitedSignal 
-<<", Limited: " << signal
-<< ", AoO: "<< cameraError.areaOfObject << endl;
 
- 
-}
   
    if(securityStop){
     
@@ -956,7 +1001,7 @@ cout << setprecision(9)
   time1.tv_sec =0;
   time1.tv_nsec = 7000000; // 8 ms / 125 hz
       
-   nanosleep(&time1,NULL); // Lets sleep for 8ms/one tick
+   //nanosleep(&time1,NULL); // Lets sleep for 8ms/one tick
     
  
 
@@ -969,8 +1014,8 @@ cout << setprecision(9)
    
   }
   
-  
-     writeLog(log,logfilename);
+  writeLog(log,logfilename);
+
   
    
    cout << "Exiting" << endl; 

@@ -30,6 +30,14 @@ RobotCommander::RobotCommander(int * _socket){
   handleDelay = true;
 }
 
+RobotCommander::RobotCommander(){
+  
+    time1.tv_sec =0;
+  time1.tv_nsec = 8000000; // 8 ms / 125 hz
+  totalElapsedTicks = 0;
+  elapsedTicks = 0;
+  handleDelay = true;
+}
 
 void RobotCommander::addCmd(string _command, int _maxTicks)
 {
@@ -101,7 +109,7 @@ handleDelay = setTo;
 
 
 
-void RobotCommander::cmd::setSocket(int* _socket)
+void RobotCommander::setSocket(int* _socket)
 {
 socket = _socket;
 }
