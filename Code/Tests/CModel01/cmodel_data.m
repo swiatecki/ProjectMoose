@@ -7,6 +7,8 @@ T = 0.01695;
 %56 Hz
 T = 0.01786;
 
+T = 2*T;
+
 intrinsic = 779.280;
 height=0.37; %37 cm
 radius = 0.60;

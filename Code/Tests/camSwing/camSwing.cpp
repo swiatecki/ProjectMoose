@@ -34,6 +34,8 @@ int noRobot = 0;
 int noCamera = 0;
 int verbose =0;
 int saveImgs =0;
+int histogram =0;
+
 
 void ctrlCHandler(int s);
 
@@ -139,6 +141,11 @@ int main(int argc, char *argv[]){
         if(string(argv[i]) == "--saveImgs" || string(argv[i]) == "-s"){
 		  saveImgs = 1;
 	  cout << " Saving images " << endl;
+      }
+      
+      if(string(argv[i]) == "--histogram"){
+		  histogram = 1;
+	  cout << " Showing histogram " << endl;
       }
       
       if(string(argv[i]) == "--verbose" || string(argv[i]) == "-v"){
@@ -332,6 +339,10 @@ std::vector<cmdData> cmd;
   cv::namedWindow("Color", CV_WINDOW_AUTOSIZE); //create a window with the name "MyWindow"
 
 cv::namedWindow("Thresholded", CV_WINDOW_AUTOSIZE); //create a window with the name "HSV"
+
+
+cv::namedWindow("Histogram", CV_WINDOW_AUTOSIZE); //create a window with the name "HSV"
+
 //cv::namedWindow( "Contours", CV_WINDOW_AUTOSIZE );
 // int initShutter = 952;
 int initShutter = 174; // max 800 for 60 fps
@@ -360,6 +371,7 @@ cv::Mat tresholdedFrame;
 cv::Mat hsvFrame;
 cv::Mat grey,tmp;
 cv::Mat contourOutput;
+cv::Mat histo;
 
   
 
@@ -390,6 +402,8 @@ float distX,distY;
 
 cv::Point centerOfFrame;
 cv::Size s;
+
+Guppy g;
 
 cameraLog cl;
 
@@ -630,6 +644,21 @@ tmrIdle.setStart();
 
   if(!frame .data) break;
 
+  
+    if(histogram){
+    
+  histo =  g.histogramGS(grey);
+    
+  cv::imshow("Histogram",histo);
+  
+  if(!debugMonitor){
+    if(cv::waitKey(1) >= 27){ break;  }
+  }
+      
+      
+    }
+  
+  
 
   if(debugMonitor){
     // Show the iamge to the user
@@ -675,7 +704,7 @@ if(saveImgs){
       picNo++;
   }
   
-  
+
 
 }
 
