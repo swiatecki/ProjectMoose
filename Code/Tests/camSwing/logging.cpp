@@ -11,6 +11,8 @@ void writeLog(std::vector<slogData> & data,std::string filename){
 
 data_sz size = data.size();
 
+cout << "Writing log of " << size << " lines"<< endl;
+
 ofstream a_file (filename.c_str(),ios::trunc);
 
 a_file.precision(15);
@@ -65,7 +67,7 @@ for(data_sz i = 0; i != size; ++i){
 
   a_file.close();
 
-
+cout << "Wrote to "<< filename << endl;
 
 }
 

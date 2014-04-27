@@ -2,16 +2,17 @@
 clear all;
 cd /misc/shome/ex16/_Bachelor/Code/Tests/CModel01;
 % 59 Hz
-T = 0.01695;
+%T = 0.01695;
 
 %56 Hz
 %T = 0.01786;
 
-
+%60Hz
+T = 1/60;
 
 intrinsic = 779.280;
 height=0.37; %37 cm
-radius = 0.60;
+radius = 0.579106;
 magic = 0.0004748;
 %%
 
@@ -55,10 +56,9 @@ margin(sys)
 %%
 
 clc;
-format short
-load nstest.txt;
 
-delayLog = nstest;
+format shortG
+delayLog = load('../camSwing/defaultLog.txt');
 
 qActual = delayLog(:,3:8); % Actual Position
 qdActual = delayLog(:,9:14); %Actual  Velocity
@@ -67,14 +67,50 @@ qdTarget = delayLog(:,21:26); % Target vel
 qTarget = delayLog(:,27:32); % Target pos
 tool = delayLog(:,33:38); % Target pos
 
-qddActual = diff(qdActual)/0.008;
+height = tool(1,3)-0.27; % 27 cm to account for table + tool
+
+qddActual = diff(qdActual)/T;
 
 robotTime = delayLog(:,1);
 
-%%
+gain = 15;
 
-[num, den] = dlinmod('step_cmodel01_cl',T);
-sys = tf(num,den,T);
+base = qActual(:,1);
 
-step(sys)
+%stem(base)
+
+
+f = figure();
+hold all
+set(f,'name','Test','numbertitle','off')
+
+
+%Actual poart
+
+tv = 0:T:(length(robotTime)/(1/T))-T;
+
+base=base*radius;
+offset=base(1);
+%Plot it
+plot(tv,base-offset)
+
+
+% Til simulink modellen
+initE = -0.048 % meter
+initE = -0.092863
+
+
+
+
+
+sim('step_cmodel01_cl',3)
+
+
+
+plot(simout.time,simout.signals.values*radius)
+legend('Actual position (base)','Simulated position');
+title(sprintf('Actual Pos vs Simulated pos, Kp = %d, Step = %f',gain,initE))
+xlabel('Time [s]')
+ylabel('Position - relative [m]')
+hold off;
 

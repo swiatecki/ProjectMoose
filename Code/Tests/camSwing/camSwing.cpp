@@ -37,6 +37,7 @@ int verbose =0;
 int saveImgs =0;
 int histogram =0;
 int controller =0;
+double gain = 15;
 
 std::map<int,string> errMsg;
 
@@ -68,6 +69,7 @@ void shutterCB(int pos, void* param);
  
  RobotCommander robot;
  slogData tmp;
+ vector<slogData> robotLog;
  
 bool securityStop = false;
 string reason;  
@@ -126,11 +128,13 @@ int main(int argc, char *argv[]){
   errMsg[0] = "AoO to large";
   errMsg[1] = "Out of operation area";
  
-  
+   // Default
+    logfilename = "defaultLog.txt";
+    
+    
   if(argc < 2){
     
-    // Default
-    logfilename = "defaultLog.txt";
+   
 
 
     
@@ -181,6 +185,7 @@ int main(int argc, char *argv[]){
 	  cout << "-d or --debugmonitor: \t Shows camera/vision output. May slow down robot " << endl;
 	  cout << "-s or --saveImgs: \t Save camera imgs to imgs/" << endl;
 	  cout << "-v or --verbose: \t Alot of nice debugging info" << endl;
+	  cout << "-c or --controller: \t Enable controller. Close the loop." << endl;
 	  cout << "--log: \t Where to save the log(default: defaultLog.txt) , ex: --log somelog.txt" << endl;
 	  exit(0);
       }
@@ -375,8 +380,8 @@ cv::namedWindow("Histogram", CV_WINDOW_AUTOSIZE); //create a window with the nam
 int initShutter = 174; // max 800 for 60 fps
 
 int shutterVal = initShutter;
-// int cannyMin = 26;
-int cannyMin = 43;
+int cannyMin = 10;
+//int cannyMin = 43;
 
 
 
@@ -446,7 +451,10 @@ uint64_t newtime = 0,difftmr = 0;
  double signal=0,nonLimitedSignal=0,pixeldist=0,radians=0,meters=0;
 
 
-
+ double e =0;
+ double initE =0;
+ double initBase=0;  
+ double initR =0;
 
 
 
@@ -464,6 +472,7 @@ while(runState){
    //it took less than 50 hz to get the frame. Camera should be up
    
    cameraError.ready = 1;
+   signal = 0;
 }
 
  tmr0.setStop();
@@ -699,11 +708,23 @@ if(!controller){
 /* ACTUAL CONTROLLER */
 if(controller){
 
+  if(cameraError.ready){
+    // Only when ready!
+    
     signal = cameraError.x;
 pixeldist = signal;
     // from pixels to m
       signal = g.px2m(signal,g.getActualHeight(tmp.tool[2]));
 
+      // Save initial error in meters
+      
+      if(!initE){
+	initE = signal;
+	//initR = 
+	//cout << "du leder efter:" << initR << "baseret på: X " << tmp.tool[0] << "og Y: "<< tmp.tool[1] <<endl;
+      }
+      
+      
 meters = signal;
     // from m to radian
       
@@ -714,7 +735,7 @@ meters = signal;
       
       // Apply controller...
       
-    signal = signal*10;
+    signal = signal*gain;
       
       nonLimitedSignal = signal;
     
@@ -728,13 +749,13 @@ meters = signal;
       
       
       
-      if(signal < 0.07 && signal > 0 ){
+      if(signal < 0.03 && signal > 0 ){
 	signal = 0;
-      }else if(signal > -0.07 && signal < 0){
+      }else if(signal > -0.03 && signal < 0){
 	    signal = 0;
       }
   
-  
+  }
 }
 /* END ACTUAL CONTROLLER */
 
@@ -765,6 +786,16 @@ std::string cmd = strs.str();
       
     }
   
+}
+
+
+if(cameraError.ready){
+  /* ADD TO LOG */
+    if(cameraError.ready == 1) {
+    robotLog.push_back(tmp);
+    }
+
+
 }
   
 if(verbose){
@@ -879,9 +910,14 @@ if(saveImgs){
 cv::destroyWindow("Color"); //destroy the window with the name, "MyWindow"
 cv::destroyWindow("Thresholded"); 
 
-
-
+cout << "logfilename: " << logfilename << endl;
+writeLog(robotLog,logfilename);
 writeCameraLog(camLog,"camLog.txt");
+
+
+cout << "Initial error[m]:" << initE <<endl;
+cout << "Error at quit[rad]: "<< radians <<endl;
+cout << "Initial radius[m]: "<< g.getRadius(tmp.tool[0],tmp.tool[1]) <<endl;
 
 }
 
@@ -915,13 +951,8 @@ int counter = 0;
 // double ref = 
  // double ref = 1.6;
  
- double e,signal = 0.0;
- double initE =0;
- double initBase=0;  
- 
- vector<slogData> log;
- 
 
+ 
 
   Timing sleeper;
   sleeper.setStart();
@@ -962,15 +993,6 @@ int counter = 0;
  rd1.getqActual(q);
  rd1.getqTarget(qTarget);
  
- //cout << rd1.getTime() << endl;
-
-//  cout << "qTarget: " << qTarget[0] << "," << qTarget[1] << ","<< qTarget[2] << ","<< qTarget[3] << ","<< qTarget[4] << "," << qTarget[5] << "," << endl;
- //  cout << "qactual: " << q[0] << "," << q[1] << ","<< q[2] << ","<< q[3] << ","<< q[4] << "," << q[5] << "," << endl;
-  
- // Add to Log
- 
-
- 
  
   tmp.robotTime = rd1.getTime(); // Returns double
   
@@ -1005,14 +1027,6 @@ int counter = 0;
  tmp.cameraDistXm = g.px2m(tmp.cameraDistXpx,g.getActualHeight(tmp.tool[2]));
 
  
- //pixeldist = tmp.cameraDistXpx;
- //meters = tmp.cameraDistXm;
-  
-   //cout << "qactual tmp: " << tmp.qActual[0] << "," << tmp.qActual[1] << ","<< tmp.qActual[2] << ","<< tmp.qActual[3] << ","<< tmp.qActual[4] << "," << tmp.qActual[5] << "," << endl;
-  if(cameraError.ready == 1) {
-  log.push_back(tmp);
-  }
-    
  
   
   /* 
@@ -1091,10 +1105,10 @@ ss << errMsg[0] << "@" << cameraError.areaOfObject;
     
   }
   
-   struct timespec time1;
+   /*struct timespec time1;
   time1.tv_sec =0;
   time1.tv_nsec = 7000000; // 8 ms / 125 hz
-      
+     */ 
    //nanosleep(&time1,NULL); // Lets sleep for 8ms/one tick
     
  
@@ -1108,13 +1122,8 @@ ss << errMsg[0] << "@" << cameraError.areaOfObject;
    
   }
   
-  writeLog(log,logfilename);
-
   
    
-   cout << "Exiting" << endl; 
-    cout << "InitE = " << initE << endl; 
-    cout << "InitBase = " << initBase << endl;
   
   
 }
