@@ -16,7 +16,7 @@ Model {
       Name		      "Out1"
     }
     ParameterArgumentNames  ""
-    ComputedModelVersion    "1.47"
+    ComputedModelVersion    "1.50"
     NumModelReferences	    0
     NumTestPointedSignals   0
   }
@@ -37,9 +37,9 @@ Model {
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "ex16"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Thu Apr 24 11:35:07 2014"
-  RTWModifiedTimeStamp	  320237011
-  ModelVersionFormat	  "1.%<AutoIncrement:47>"
+  LastModifiedDate	  "Mon Apr 28 16:56:31 2014"
+  RTWModifiedTimeStamp	  320604991
+  ModelVersionFormat	  "1.%<AutoIncrement:50>"
   ConfigurationManager	  "None"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -867,7 +867,7 @@ Model {
   }
   System {
     Name		    "cmodel01_ol"
-    Location		    [54, 206, 1261, 853]
+    Location		    [36, 203, 1243, 850]
     Open		    on
     ModelBrowserVisibility  off
     ModelBrowserWidth	    200
@@ -881,7 +881,7 @@ Model {
     ShowPageBoundaries	    off
     ZoomFactor		    "100"
     ReportName		    "simulink-default.rpt"
-    SIDHighWatermark	    "114"
+    SIDHighWatermark	    "116"
     Block {
       BlockType		      Inport
       Name		      "In1"
@@ -1168,11 +1168,11 @@ Model {
 	  Name			  "Robot1"
 	  SID			  "59"
 	  Ports			  [1, 1]
-	  Position		  [260, 132, 320, 168]
+	  Position		  [275, 132, 335, 168]
 	  ZOrder		  -2
 	  InputPortMap		  "u0"
 	  Numerator		  "[T]"
-	  Denominator		  "[1 -1 0]"
+	  Denominator		  "[1 -1 0 0]"
 	  SampleTime		  "T"
 	}
 	Block {
@@ -1248,7 +1248,7 @@ Model {
 	  BlockType		  Outport
 	  Name			  "Out1"
 	  SID			  "64"
-	  Position		  [345, 143, 375, 157]
+	  Position		  [420, 143, 450, 157]
 	  IconDisplay		  "Port number"
 	}
 	Line {

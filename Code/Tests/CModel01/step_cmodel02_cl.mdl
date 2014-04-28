@@ -1,5 +1,5 @@
 Model {
-  Name			  "step_cmodel01_cl"
+  Name			  "step_cmodel02_cl"
   Version		  7.9
   MdlSubVersion		  0
   GraphicalInterface {
@@ -16,7 +16,7 @@ Model {
       Name		      "Out1"
     }
     ParameterArgumentNames  ""
-    ComputedModelVersion    "1.55"
+    ComputedModelVersion    "1.61"
     NumModelReferences	    0
     NumTestPointedSignals   0
   }
@@ -37,9 +37,9 @@ Model {
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "ex16"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Mon Apr 28 10:23:27 2014"
-  RTWModifiedTimeStamp	  320581351
-  ModelVersionFormat	  "1.%<AutoIncrement:55>"
+  LastModifiedDate	  "Mon Apr 28 18:03:01 2014"
+  RTWModifiedTimeStamp	  320607925
+  ModelVersionFormat	  "1.%<AutoIncrement:61>"
   ConfigurationManager	  "None"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -77,7 +77,6 @@ Model {
     $ObjectID		    1
     $ClassName		    "Simulink.SimulationData.ModelLoggingInfo"
     model_		    "Untitled1"
-    signals_		    []
     overrideMode_	    [0.0]
     Array {
       Type		      "Cell"
@@ -864,10 +863,18 @@ Model {
       FixptAsFi		      off
       NumInputs		      "1"
     }
+    Block {
+      BlockType		      TransferFcn
+      Numerator		      "[1]"
+      Denominator	      "[1 2 1]"
+      AbsoluteTolerance	      "auto"
+      ContinuousStateAttributes	"''"
+      Realization	      "auto"
+    }
   }
   System {
-    Name		    "step_cmodel01_cl"
-    Location		    [1, 209, 1208, 856]
+    Name		    "step_cmodel02_cl"
+    Location		    [1, 347, 1208, 994]
     Open		    on
     ModelBrowserVisibility  off
     ModelBrowserWidth	    200
@@ -881,7 +888,7 @@ Model {
     ShowPageBoundaries	    off
     ZoomFactor		    "100"
     ReportName		    "simulink-default.rpt"
-    SIDHighWatermark	    "112"
+    SIDHighWatermark	    "134"
     Block {
       BlockType		      Inport
       Name		      "In1"
@@ -1179,8 +1186,8 @@ Model {
     }
     Block {
       BlockType		      SubSystem
-      Name		      "subRobot1"
-      SID		      "55"
+      Name		      "subRobot2"
+      SID		      "124"
       Ports		      [1, 1]
       Position		      [740, 135, 780, 195]
       MinAlgLoopOccurrences   off
@@ -1197,9 +1204,9 @@ Model {
 	DataLoggingNameMode	"SignalName"
       }
       System {
-	Name			"subRobot1"
-	Location		[420, 580, 1042, 948]
-	Open			on
+	Name			"subRobot2"
+	Location		[1280, 51, 2560, 997]
+	Open			off
 	ModelBrowserVisibility	off
 	ModelBrowserWidth	200
 	ScreenColor		"white"
@@ -1214,14 +1221,14 @@ Model {
 	Block {
 	  BlockType		  Inport
 	  Name			  "In1"
-	  SID			  "56"
+	  SID			  "125"
 	  Position		  [15, 143, 45, 157]
 	  IconDisplay		  "Port number"
 	}
 	Block {
 	  BlockType		  RateLimiter
 	  Name			  "Rate Limiter1"
-	  SID			  "57"
+	  SID			  "126"
 	  Position		  [190, 135, 220, 165]
 	  ZOrder		  -7
 	  RisingSlewLimit	  "15"
@@ -1231,7 +1238,7 @@ Model {
 	Block {
 	  BlockType		  Scope
 	  Name			  "Rate Scope"
-	  SID			  "58"
+	  SID			  "127"
 	  Ports			  [1]
 	  Position		  [290, 29, 320, 61]
 	  ZOrder		  -3
@@ -1263,20 +1270,19 @@ Model {
 	}
 	Block {
 	  BlockType		  DiscreteTransferFcn
-	  Name			  "Robot1"
-	  SID			  "59"
+	  Name			  "Robot delay"
+	  SID			  "128"
 	  Ports			  [1, 1]
-	  Position		  [260, 132, 320, 168]
+	  Position		  [275, 132, 335, 168]
 	  ZOrder		  -2
 	  InputPortMap		  "u0"
-	  Numerator		  "[T]"
-	  Denominator		  "[1 -1 0 0]"
+	  Denominator		  "[1 0 0]"
 	  SampleTime		  "T"
 	}
 	Block {
 	  BlockType		  Scope
 	  Name			  "Saturation Scope"
-	  SID			  "60"
+	  SID			  "129"
 	  Ports			  [1]
 	  Position		  [135, 14, 165, 46]
 	  ZOrder		  -3
@@ -1305,7 +1311,7 @@ Model {
 	Block {
 	  BlockType		  Saturate
 	  Name			  "Saturation1"
-	  SID			  "61"
+	  SID			  "130"
 	  Ports			  [1, 1]
 	  Position		  [100, 135, 130, 165]
 	  ZOrder		  -15
@@ -1317,7 +1323,7 @@ Model {
 	Block {
 	  BlockType		  Sum
 	  Name			  "Sum1"
-	  SID			  "62"
+	  SID			  "131"
 	  Ports			  [2, 1]
 	  Position		  [70, 75, 90, 95]
 	  ZOrder		  -18
@@ -1331,7 +1337,7 @@ Model {
 	Block {
 	  BlockType		  Sum
 	  Name			  "Sum2"
-	  SID			  "63"
+	  SID			  "132"
 	  Ports			  [2, 1]
 	  Position		  [230, 75, 250, 95]
 	  ZOrder		  -18
@@ -1343,10 +1349,18 @@ Model {
 	  SaturateOnIntegerOverflow off
 	}
 	Block {
+	  BlockType		  TransferFcn
+	  Name			  "Transfer Fcn"
+	  SID			  "133"
+	  Position		  [365, 131, 470, 169]
+	  ZOrder		  -9
+	  Denominator		  "[0.033333 1 0]"
+	}
+	Block {
 	  BlockType		  Outport
 	  Name			  "Out1"
-	  SID			  "64"
-	  Position		  [345, 143, 375, 157]
+	  SID			  "134"
+	  Position		  [540, 143, 570, 157]
 	  IconDisplay		  "Port number"
 	}
 	Line {
@@ -1376,7 +1390,7 @@ Model {
 	  SrcPort		  1
 	  Points		  [10, 0]
 	  Branch {
-	    DstBlock		    "Robot1"
+	    DstBlock		    "Robot delay"
 	    DstPort		    1
 	  }
 	  Branch {
@@ -1389,12 +1403,6 @@ Model {
 	  SrcPort		  1
 	  Points		  [0, -40]
 	  DstBlock		  "Rate Scope"
-	  DstPort		  1
-	}
-	Line {
-	  SrcBlock		  "Robot1"
-	  SrcPort		  1
-	  DstBlock		  "Out1"
 	  DstPort		  1
 	}
 	Line {
@@ -1416,6 +1424,18 @@ Model {
 	  SrcPort		  1
 	  Points		  [0, -55]
 	  DstBlock		  "Saturation Scope"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "Robot delay"
+	  SrcPort		  1
+	  DstBlock		  "Transfer Fcn"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "Transfer Fcn"
+	  SrcPort		  1
+	  DstBlock		  "Out1"
 	  DstPort		  1
 	}
       }
@@ -1466,7 +1486,7 @@ Model {
     }
     Line {
       Name		      "[rad]"
-      SrcBlock		      "subRobot1"
+      SrcBlock		      "subRobot2"
       SrcPort		      1
       Points		      [45, 0; 0, 10]
       Branch {
@@ -1559,12 +1579,12 @@ Model {
       SrcPort		      1
       Points		      [5, 0]
       Branch {
-	DstBlock		"subRobot1"
+	Points			[0, -90]
+	DstBlock		"Scope1"
 	DstPort			1
       }
       Branch {
-	Points			[0, -90]
-	DstBlock		"Scope1"
+	DstBlock		"subRobot2"
 	DstPort			1
       }
     }

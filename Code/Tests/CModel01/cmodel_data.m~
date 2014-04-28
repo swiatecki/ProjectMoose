@@ -193,7 +193,7 @@ initE = -0.0933398
 
 
 
-sim('step_cmodel02_cl_2xPol',3)
+sim('step_cmodel02_cl',3)
 
 
 
