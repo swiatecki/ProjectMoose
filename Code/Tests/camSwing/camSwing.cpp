@@ -37,7 +37,7 @@ int verbose =0;
 int saveImgs =0;
 int histogram =0;
 int controller =0;
-double gain = 12;
+double gain = 10;
 
 std::map<int,string> errMsg;
 
@@ -380,7 +380,7 @@ cv::namedWindow("Histogram", CV_WINDOW_AUTOSIZE); //create a window with the nam
 int initShutter = 174; // max 800 for 60 fps
 
 int shutterVal = initShutter;
-int cannyMin = 29;
+int cannyMin = 17;
 //int cannyMin = 43;
 
 

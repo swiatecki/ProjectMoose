@@ -142,7 +142,7 @@ bode(sys)
 grid on
 db2mag(18)
 %%
-%still cmodel02
+%still cmodel02 - template
 clc;
 
 format shortG
@@ -182,7 +182,7 @@ offset=base(1);
 %Plot it
 plot(tv,base-offset)
 
-
+ 
 % Til simulink modellen
 initE = -0.048 % meter
 initE = -0.092863
@@ -193,14 +193,17 @@ initE = -0.0933398
 
 
 
-sim('step_cmodel02_cl',3)
+sim('step_cmodel02_cl_2xPol',3)
 
 
 
 
 plot(simout.time,simout.signals.values*radius)
 legend('"Slow" model -Actual position (base)','Simulated position');
-title(sprintf('Actual Pos vs Simulated pos, Kp = %d, Step = %f',gain,initE))
+title(sprintf('Actual Pos vs Simulated pos \n Added 2nd order system \n Kp = %d, Step = %f',gain,initE))
 xlabel('Time [s]')
 ylabel('Position - relative [m]')
 hold off;
+
+%% 
+% Generates final plot, 2x pole at 
