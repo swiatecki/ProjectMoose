@@ -380,7 +380,7 @@ cv::namedWindow("Histogram", CV_WINDOW_AUTOSIZE); //create a window with the nam
 int initShutter = 174; // max 800 for 60 fps
 
 int shutterVal = initShutter;
-int cannyMin = 17;
+int cannyMin = 61;
 //int cannyMin = 43;
 
 
