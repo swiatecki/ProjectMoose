@@ -22,7 +22,7 @@ public:
   void getqTarget(double * returnArray); // target pos
   void getqddTarget(double *returnArray); // Target acc
   void getqdTarget(double *returnArray); // Target vel
-  void getTool(double *returnArray); // Target vel
+  void getTool(double *returnArray); // Target tool pos (xyz)
 
   int getRecvLength();
   

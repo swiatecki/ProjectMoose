@@ -25,6 +25,7 @@
 #include "../../Base/RobotCommander.h"
 #include "../../Base/Timing.cpp"
 #include "../../Base/Guppy.h"
+#include "../../Base/Gripper.h"
 
 #define _USE_MATH_DEFINES
 
@@ -37,6 +38,8 @@ int verbose =0;
 int saveImgs =0;
 int histogram =0;
 int controller =0;
+int picknplace = 0;
+int endgame;
 double gain = 10;
 
 std::map<int,string> errMsg;
@@ -116,9 +119,16 @@ string type2str(int type) {
   return r;
 }
 
+// Init = blue
 
+int hsv_hl = 67;
+int hsv_hu = 97;
+int hsv_sl = 151;
+int hsv_su = 255;
+int hsv_vl = 21;
+int hsv_vu = 255;
 
-
+int fusk = 0;
 
 
 
@@ -178,6 +188,12 @@ int main(int argc, char *argv[]){
 	  cout << " Controller active. The loop has been closed" << endl;
       }
       
+       if(string(argv[i]) == "--picknplace" || string(argv[i]) == "-p"){
+	
+	 picknplace = 1;
+	  cout << " Picking N Placing " << endl;
+      }
+      
       if(string(argv[i]) == "--help" || string(argv[i]) == "-h"){
 	
 	  cout << "Usage: " <<endl;
@@ -186,6 +202,8 @@ int main(int argc, char *argv[]){
 	  cout << "-s or --saveImgs: \t Save camera imgs to imgs/" << endl;
 	  cout << "-v or --verbose: \t Alot of nice debugging info" << endl;
 	  cout << "-c or --controller: \t Enable controller. Close the loop." << endl;
+	  cout << "--histogram: \t Show histogram for binary image. USE with -n !" << endl;
+	  cout << "-p or --picknplace: \t Enable picknplace mode!" << endl;
 	  cout << "--log: \t Where to save the log(default: defaultLog.txt) , ex: --log somelog.txt" << endl;
 	  exit(0);
       }
@@ -213,7 +231,12 @@ int main(int argc, char *argv[]){
   n.startNet();
   
   
+  
+
+  
  
+  
+
   
 
  // Lets make a RobotCommander, for initial position
@@ -284,10 +307,17 @@ cameraError.y = -999;
   * WHILE
   */
  
- 
+ char in;
   while(runState){
     
+   cin >> in;
    
+   if(in == 'e'){
+      endgame = 1;
+     cout << "hooo" <<endl;
+  }
+  
+  
   }
   
   // runState changed..
@@ -344,16 +374,125 @@ void ctrlCHandler(int s){
 }
 
 void goToStart(){
-  
-  
-  
-  
-  
-  
+
   
 }
 
+
+
+void blackDotTracking(cv::Mat &_RGBMat,cv::Mat &_grey,cv::Mat &_thresholdFrame,int threshold,cv::Moments &_mu,cv::Point2f &_mc,cv::Size &_s,cv::Point &_centerOfFrame){
+  cv::Mat grey;
+  cv::cvtColor(_RGBMat, _grey, CV_RGB2GRAY );
+//   
+  
+  // Threshold it. The black dot becomes white. (NIBARY_INV)
+cv::threshold(_grey,_thresholdFrame,threshold,255,cv::THRESH_BINARY_INV);
+
+// Calculate momets
+_mu = cv::moments(_thresholdFrame,true);
+
+// Find center
+_mc = cv::Point2f( _mu.m10/_mu.m00 , _mu.m01/_mu.m00 );
+
+// Count non zero pixels. Used for determining if we are screwed (getting large "white" areas.)
+cameraError.areaOfObject =  cv::countNonZero(_thresholdFrame);
+
+// Calculate distance from center of image
+_s = _thresholdFrame.size(); 
+_centerOfFrame = cv::Point(_s.width/2,_s.height/2);  
+
+
+
+}
+
+//void blockTracking(cv::Mat &_RGBMat,cv::Mat &_hsv,cv::Mat &_thresholdFrame,int threshold,cv::Moments &_mu,cv::Point2f &_mc,cv::Size &_s,cv::Point &_centerOfFrame){
+void blockTracking(cv::Mat &_RGBMat,cv::Mat &_hsv,cv::Mat &_thresholdFrame,cv::Mat &_contourOutput,cv::Moments &_mu,cv::Point2f &_mc,cv::Size &_s,cv::Point &_centerOfFrame){ 
+  /* 
+   * Convert to HSV
+   * Filter, so only eg. red is left -> Binary image
+   * Find center 
+  
+  */
+
+  
+  cv::cvtColor(_RGBMat,_hsv,CV_RGB2HSV);
+  
+/* cv::Scalar lower = cv::Scalar(114, 135, 135);
+ 
+ cv::Scalar upper = cv::Scalar(142, 255, 255);*/
+
+cv::Scalar lower = cv::Scalar(hsv_hl, hsv_sl, hsv_vl);
+ 
+cv::Scalar upper = cv::Scalar(hsv_hu, hsv_su, hsv_vu);
+  
+  cv::inRange(_hsv,lower,upper,_thresholdFrame);
+  
+  //std::vector<std::vector<cv::Point> > contours;
+  
+ /* vector< vector<cv::Point> > contours;
+  
+  std::vector<cv::Vec4i> hierarchy;
+  
+   
+   cv::Scalar greenColor = cv::Scalar( 0,255,0 );
+  
+   // Lets try canny
+   
+  cv::Canny(_thresholdFrame,_thresholdFrame,50,200);
+   
+cv::findContours(_thresholdFrame,contours,cv::noArray(),CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE);
+  
+
+//cout << type2str(_thresholdFrame.type()) << endl;
+
+ //for( int i = 0; i < contours.size(); i++ )  { 
+      cv::Mat test;
+	  try{
+	  cv::drawContours(_RGBMat,contours,-1,greenColor);
+	  }
+
+	  catch(cv::Exception e){
+	    
+	    cout << "SHIT!" <<endl;
+	  }
+
+//}
+
+cout << contours.size() << endl;*/
+
+   
+   
+   
+  // cv::Rect a = cv::boundingRect(_thresholdFrame);
+
+  // cv::rectangle(_RGBMat,a,greenColor);
+  
+  /* SIMPLE START */
+  
+  // Calculate momets
+_mu = cv::moments(_thresholdFrame,true);
+
+// Find center
+_mc = cv::Point2f( _mu.m10/_mu.m00 , _mu.m01/_mu.m00 );
+
+// Count non zero pixels. Used for determining if we are screwed (getting large "white" areas.)
+cameraError.areaOfObject =  cv::countNonZero(_thresholdFrame);
+
+//cout << "nz: " << cv::countNonZero(_thresholdFrame) << endl;
+
+// Calculate distance from center of image
+_s = _thresholdFrame.size(); 
+_centerOfFrame = cv::Point(_s.width/2,_s.height/2);  
+  
+  
+  
+  
+  
+
+}
+
 void *cameraThread(void *arg){
+
   
 
   Timing tmr0;
@@ -363,35 +502,53 @@ void *cameraThread(void *arg){
 std::vector<cmdData> cmd;
   cv::Mat frame; 
   
-  cv::namedWindow("Color", CV_WINDOW_AUTOSIZE); //create a window with the name "MyWindow"
+  cv::namedWindow("Non-filtered", CV_WINDOW_AUTOSIZE); //create a window with the name "MyWindow"
 
-cv::namedWindow("Thresholded", CV_WINDOW_AUTOSIZE); //create a window with the name "HSV"
+cv::namedWindow("Binary", CV_WINDOW_AUTOSIZE); //create a window with the name "binary"
+
+if(histogram){
+cv::namedWindow("Histogram", CV_WINDOW_AUTOSIZE); //create a window with the name "Histogram"
+}
+
+if(picknplace && debugMonitor){
+//cv::namedWindow("HSV",CV_WINDOW_AUTOSIZE);
+cv::namedWindow( "Contours", CV_WINDOW_AUTOSIZE );
+}
 
 
-cv::namedWindow("Histogram", CV_WINDOW_AUTOSIZE); //create a window with the name "HSV"
 
-//cv::namedWindow( "Contours", CV_WINDOW_AUTOSIZE );
-// int initShutter = 952;
-int initShutter = 174; // max 800 for 60 fps
+int initShutter = 370; // 174 for BW, max 800 for 60 fps, 
 
 int shutterVal = initShutter;
-int cannyMin = 61;
+
+
+int threshold = 31;
 //int cannyMin = 43;
 
+// cv::Scalar lower = cv::Scalar(114, 135, 135);
+ 
+ //cv::Scalar upper = cv::Scalar(142, 255, 255);
 
 
-int blockSize = 89;
 
 int fps = 60;
 
 
 // Shutter slider
-cv::createTrackbar("Shutter","Color",&shutterVal,4095,shutterCB,NULL);
+cv::createTrackbar("Shutter","Non-filtered",&shutterVal,4095,shutterCB,NULL);
 
 // Canny treshold
 
-cv::createTrackbar("Threshold","Color",&cannyMin,255,NULL,NULL);
-cv::createTrackbar("BlockSize","Color",&blockSize,255,NULL,NULL);
+cv::createTrackbar("Threshold","Non-filtered",&threshold,255,NULL,NULL);
+cv::createTrackbar("H","Binary",&hsv_hl,255,NULL,NULL);
+cv::createTrackbar("H low","Binary",&hsv_hu,255,NULL,NULL);
+cv::createTrackbar("S","Binary",&hsv_sl,255,NULL,NULL);
+cv::createTrackbar("S Low","Binary",&hsv_su,255,NULL,NULL);
+cv::createTrackbar("V","Binary",&hsv_vl,255,NULL,NULL);
+cv::createTrackbar("V Low","Binary",&hsv_vu,255,NULL,NULL);
+
+cv::createTrackbar("Dummy","Binary",&fusk,1,NULL,NULL);
+
 
 cv::Mat colorFrame;
 cv::Mat tresholdedFrame;
@@ -404,14 +561,12 @@ cv::Mat histo;
 
 
 cap.open(CV_CAP_DC1394); // Open first firewire camera. in 2.3 use CV_CAP, in 2.5 use CV::CAP
-
-
-cap.set(CV_CAP_PROP_WHITE_BALANCE_BLUE_U,794); // 736
+cap.set(CV_CAP_PROP_WHITE_BALANCE_BLUE_U,655); // 794 for b/w, 655 for color
 cap.set(CV_CAP_PROP_WHITE_BALANCE_RED_V,437);
 cap.set(CV_CAP_PROP_EXPOSURE,initShutter); // "Shutter" in coriander
 cap.set(CV_CAP_PROP_FPS,fps);
 cap.set(CV_CAP_PROP_GAMMA,0);
-cap.set(CV_CAP_PROP_GAIN,30);
+cap.set(CV_CAP_PROP_GAIN,50); // was 30
 
 
 
@@ -423,12 +578,13 @@ cv::Rect roi = cv::Rect(0,0,640,360);
 cv::Mat submatrix;
 cv::Moments mu;
 cv::Point2f mc;
-
-cv::Scalar color = cv::Scalar( 0,255,0 );
-float distX,distY;
-
 cv::Point centerOfFrame;
 cv::Size s;
+
+cv::Scalar greenColor = cv::Scalar( 0,255,0 );
+float distX,distY;
+
+
 
 Guppy g;
 
@@ -451,11 +607,17 @@ uint64_t newtime = 0,difftmr = 0;
  double initBase=0;  
  double initR =0;
 
-
-
-
+bool sentEndgame = false;
+ 
 while(runState){
 
+  if(fusk == 1){
+    
+    endgame = 1;
+    
+    cout << "ENDGAME!!" << endl;
+  }
+  
  tmr0.setStop();
  
  cl.deltaus =  tmr0.elapsedTimeus();
@@ -478,173 +640,57 @@ cap >> frame;
 
 tmrFrame.setStop();
 
+
 newtime = tmrFrame.elapsedTimeus();
 
 difftmr = newtime-old_tmr;
 old_tmr = newtime;
 
-// cl.getFrame = tmr0.elapsedTimeus();
 cl.getFrame = difftmr;
+
+// If the incomming frame was empty.
+ if(!frame.data){ break; };
 
 
 tmrProcessing.setStart();
-//std::vector<std::vector<cv::Point> > contours;
-//std::vector<cv::Vec4i> hierarchy;
 
-/* Maybe */
-
-//Remove gripper from img
-
-// cv::Mat(frame,roi).copyTo(submatrix);
-// 
-// 
-// // Get color image, decode bayer BGGR.  
-// cv::cvtColor(submatrix,colorFrame,CV_BayerBG2RGB,0);
-// cv::cvtColor(colorFrame, grey, CV_RGB2GRAY );
-// 
-// 
-// tmr0.setStop();
-// cl.colorConversion = tmr0.elapsedTimeus();
-// 
-// // Threshold it. The black dot becomes white. (NIBARY_INV)
-// cv::threshold(grey,tresholdedFrame,cannyMin,255,cv::THRESH_BINARY_INV);
-
-/* end maybe */
-
-
-
-/* Before */
-
-//Remove gripper from img
 
 submatrix = cv::Mat(frame,roi);
 
 
 // Get color image, decode bayer BGGR.  
 cv::cvtColor(submatrix,colorFrame,CV_BayerBG2RGB);
-cv::cvtColor(colorFrame, grey, CV_RGB2GRAY );
 
-
-tmr0.setStop();
-cl.colorConversion = tmr0.elapsedTimeus();
-
-// Threshold it. The black dot becomes white. (NIBARY_INV)
-cv::threshold(grey,tresholdedFrame,cannyMin,255,cv::THRESH_BINARY_INV);
-
-// /* end BEFORE */
-
-/* after* 
- * 
- **/
-
-//  // Get color image, decode bayer BGGR.  
-// cv::cvtColor(frame,colorFrame,CV_BayerBG2RGB,0);
-// cv::cvtColor(colorFrame, grey, CV_RGB2GRAY );
-// 
-// submatrix = cv::Mat(grey,roi);
-// 
-// tmr0.setStop();
-// cl.colorConversion = tmr0.elapsedTimeus();
-// 
-// 
-// 
-// 
-// // Threshold it. The black dot becomes white. (NIBARY_INV)
-// cv::threshold(grey,tresholdedFrame,cannyMin,255,cv::THRESH_BINARY_INV);
-
-/* 
- * end after */
-
-
-/* no bayer* 
- * 
- **/
-
- // Get color image, decode bayer BGGR.  
-//cv::cvtColor(frame,colorFrame,CV_BayerBG2RGB,0);
-//cv::cvtColor(colorFrame, grey, CV_RGB2GRAY );
-
-// cv::Mat(frame,roi).copyTo(submatrix);;
-// 
-// tmr0.setStop();
-// cl.colorConversion = tmr0.elapsedTimeus();
-// 
-// 
-// 
-// 
-// // Threshold it. The black dot becomes white. (NIBARY_INV)
-// cv::threshold(submatrix,tresholdedFrame,cannyMin,255,cv::THRESH_BINARY_INV);
-
-/* 
- * end no bayer */
-
-
-//cout << "Rows X Cols: " << frame.rows << " x " << frame.cols << endl;
-
-/*string ty =  type2str( frame.type() );
-printf("Matrix: %s %dx%d \n", ty.c_str(), frame.cols, frame.rows );
-
-ty =  type2str( submatrix.type() );
-printf("Matrix: %s %dx%d \n", ty.c_str(), submatrix.cols, submatrix.rows );
-*/
-// TRY: using raw image..
-//submatrix = cv::Mat(frame,roi);
-
-
-
-if(blockSize % 2 == 0){
-//Adaptive threshold block size SKAL være ulige..
- 
- blockSize = blockSize -1;
+if(picknplace){
+  blockTracking(colorFrame,hsvFrame,tresholdedFrame,contourOutput,mu,mc,s,centerOfFrame);
+}else{
+  // Use "old" tracking of black dot
+  blackDotTracking(colorFrame,grey,tresholdedFrame,threshold,mu,mc,s,centerOfFrame);
 }
 
-// cv::adaptiveThreshold(submatrix,tresholdedFrame,255,cv::ADAPTIVE_THRESH_GAUSSIAN_C,cv::THRESH_BINARY_INV,blockSize,0);
-
-tmr0.setStop();
-cl.thresholding = tmr0.elapsedTimeus();
 
 
+//tmr0.setStop();
+cl.colorConversion = 99; // Dummy
 
-mu = cv::moments(tresholdedFrame,true);
+
+//tmr0.setStop();
+//cl.thresholding = tmr0.elapsedTimeus();
 
 
-tmr0.setStop();
+
+
+
+//tmr0.setStop();
 cl.moments = tmr0.elapsedTimeus();
 
 
-// Find center
-mc = cv::Point2f( mu.m10/mu.m00 , mu.m01/mu.m00 );
-
-// Count non zero pixels. Used for determining if we are screwed (getting large "white" areas.)
-cameraError.areaOfObject =  cv::countNonZero(tresholdedFrame);
 
 tmr0.setStop();
 cl.area = tmr0.elapsedTimeus();
 
-
-
-// if(debugMonitor){ // Wierd stuff
-//   // this is onlu needed if the users want to see whats going on.
-//   
-//   
-//     cv::cvtColor(submatrix,colorFrame,CV_BayerBG2RGB,0);
-//    // cv::cvtColor(colorFrame, grey, CV_RGB2GRAY );
-//   
-//     // Draw it - convert to RGB to we can draw on it with colors
-//    // cv::cvtColor(tresholdedFrame, tresholdedFrame, CV_GRAY2RGB);
-//     //cv::Mat drawing = cv::Mat::zeros( tresholdedFrame.size(), CV_8UC3 );
-// 
-//     cv::circle( colorFrame, mc, 5, color, -1, 8, 0 );
-// 
-// 
-// }
-
  
-// Calculate distance from center of image
-
-s = tresholdedFrame.size(); 
-centerOfFrame = cv::Point(s.width/2,s.height/2);  
-
+//
 distX = centerOfFrame.x-mc.x;
 distY = centerOfFrame.y-mc.y;
  
@@ -668,7 +714,8 @@ cl.processing = tmrProcessing.elapsedTimeus();
 tmrIdle.setStart();
 // View part
 
-  if(!frame .data) break;
+
+ 
 
   
   
@@ -719,7 +766,7 @@ pixeldist = signal;
 	//cout << "du leder efter:" << initR << "baseret på: X " << tmp.tool[0] << "og Y: "<< tmp.tool[1] <<endl;
       }
       
-      
+
 meters = signal;
     // from m to radian
       
@@ -749,6 +796,8 @@ meters = signal;
       }else if(signal > -0.03 && signal < 0){
 	    signal = 0;
       }*/
+   
+ 
   
   }
 }
@@ -757,11 +806,16 @@ meters = signal;
 
 std::ostringstream strs;  
 
+
+
+
 // Safety check is in the faster thread
   
 if(!securityStop){
+     
 strs << "speedj([" << signal <<  ", 0, 0, 0, 0, 0],15,1)";
 }
+
   
   
 std::string cmd = strs.str();  
@@ -773,9 +827,70 @@ std::string cmd = strs.str();
     
     if(cameraError.ready ==1 || securityStop){ // 20000 is OK, 16700 is OK, 
       
-          
-    robot.addCmd(cmd,0);
-    robot.run();
+      if(!endgame){
+		  
+	   
+	
+	
+	
+	  robot.addCmd(cmd,0);
+	    robot.run();	
+      }else{
+	// Screw the guys! Pick it up
+	if(!sentEndgame){
+	  // Send the down commando
+	    
+	    
+	     Gripper gr;
+	    
+	    
+	    gr.startGripper();
+	    
+	    
+	    gr.setGripper(90);
+	    
+	    gr.stopGripper();
+	    
+	    
+	    
+	    double x = tmp.tool[0];
+	    double y = tmp.tool[1];
+	    double z = tmp.tool[2];
+	    
+	    double r = tmp.tool[3];
+	    double p = tmp.tool[4];
+	    double ya = tmp.tool[5];
+	    
+	   // z = z-0.20;
+	    z = 0.39; // real = 40 . Higher number -> up
+	    y = y-0.11;
+	    strs.clear();
+	    strs.str("");
+	    
+	    
+	    strs << "movel(p[" << x << ", "<< y <<", " << z << ", "<< r << ", "<< p <<", "<< ya << "])";
+	    std::string cmd = strs.str();  
+
+	    
+	    cout << cmd << endl;
+	    
+	    
+	    
+	  
+	    robot.addCmd(cmd,0);
+	      robot.run();
+	      sentEndgame = true;
+	      
+	}else{
+	  
+	  cout << "endgame sent, wait.. " << endl;
+	}
+	    
+	    
+	    
+      }
+    
+   
        
 
       
@@ -817,7 +932,7 @@ cout << setprecision(9)
   
     if(histogram){
     
-      histo =  g.histogramGS(grey,cannyMin);
+      histo =  g.histogramGS(grey,threshold);
 	
       
       
@@ -832,7 +947,26 @@ cout << setprecision(9)
     }
   
   
-if(debugMonitor){
+if(debugMonitor && picknplace){
+    // Tracking red block
+    
+    // Draw it - convert to RGB to we can draw on it with colors
+    cv::cvtColor(tresholdedFrame, contourOutput, CV_GRAY2RGB);
+
+    cv::circle( contourOutput, mc, 5, greenColor, -1, 8, 0 );
+    
+    cv::imshow("Binary",contourOutput);
+    cv::imshow("Non-filtered",colorFrame); // Uncomment this line to see the actual picture. It will give an unsteady FPS
+   // cv::imshow("Contours",contourOutput);
+    
+   
+    
+     if(cv::waitKey(1) >= 27){ break;  } // We wait 1ms - so that the frame can be drawn. break on ESC
+} 
+else if(debugMonitor){
+  // We are using blackDotTracking
+  
+  
   // this is onlu needed if the users want to see whats going on.
   
   
@@ -840,21 +974,17 @@ if(debugMonitor){
     cv::cvtColor(tresholdedFrame, tresholdedFrame, CV_GRAY2RGB);
     //cv::Mat drawing = cv::Mat::zeros( tresholdedFrame.size(), CV_8UC3 );
 
-    cv::circle( tresholdedFrame, mc, 5, color, -1, 8, 0 );
+    cv::circle( tresholdedFrame, mc, 5, greenColor, -1, 8, 0 );
     
      cv::cvtColor(grey, grey, CV_GRAY2RGB);
-    cv::circle( grey, mc, 5, color, -1, 8, 0 );
+    cv::circle( grey, mc, 5, greenColor, -1, 8, 0 );
 
 
-}
+    // Show the image to the user
+	cv::imshow("Binary",tresholdedFrame); // Uncomment this line to see the actual picture. It will give an unsteady FPS
 
 
-  if(debugMonitor){
-    // Show the iamge to the user
-	cv::imshow("Thresholded",tresholdedFrame); // Uncomment this line to see the actual picture. It will give an unsteady FPS
-
-
-      cv::imshow("Color",grey); // Uncomment this line to see the actual picture. It will give an unsteady FPS
+      cv::imshow("Non-filtered",grey); // Uncomment this line to see the actual picture. It will give an unsteady FPS
 
       //cv::imshow( "Center", drawing );
 
@@ -862,25 +992,13 @@ if(debugMonitor){
 
   }
   
-/*  
-    if(debugMonitor){ // Wierd stuff
-    // Show the iamge to the user
-	cv::imshow("Thresholded",tresholdedFrame); // Uncomment this line to see the actual picture. It will give an unsteady FPS
 
-
-      cv::imshow("Color",colorFrame); // Uncomment this line to see the actual picture. It will give an unsteady FPS
-
-      //cv::imshow( "Center", drawing );
-
-      if(cv::waitKey(1) >= 27){ break;  } // We wait 1ms - so that the frame can be drawn. break on ESC
-
-  }*/
 
 
 if(saveImgs){
     // Draw the circle
    cv::cvtColor(grey, grey, CV_GRAY2RGB);
-    cv::circle( grey, mc, 5, color, -1, 8, 0 );
+    cv::circle( grey, mc, 5, greenColor, -1, 8, 0 );
   
   
     filen.str("");
@@ -899,11 +1017,12 @@ if(saveImgs){
 
 
 
+cv::destroyAllWindows();
+
+//cv::destroyWindow("Color"); //destroy the window with the name, "MyWindow"
+//cv::destroyWindow("Thresholded"); 
 
 
-
-cv::destroyWindow("Color"); //destroy the window with the name, "MyWindow"
-cv::destroyWindow("Thresholded"); 
 
 cout << "logfilename: " << logfilename << endl;
 writeLog(robotLog,logfilename);
@@ -1046,12 +1165,17 @@ if(tmp.qActual[0] < 0.863 || tmp.qActual[0] > 2.157 || securityStop){
   
   stringstream ss;
 
-ss << errMsg[1] << "@" << tmp.qActual[0];
+ss << errMsg[1] << "@" << tmp.qActual[0] << "ns: aoo";
 
  reason = ss.str();
   
 }
-else if(cameraError.areaOfObject > 200 ){
+
+int pxlMax = 200;
+if(picknplace){ pxlMax = 7000; }
+
+
+if(cameraError.areaOfObject > pxlMax || securityStop ){
 
   // Probably seeing the table now
 strs << "stop(15)";

@@ -56,17 +56,17 @@ void Gripper::startGripper()
   
 }
 
-int Gripper::setGripper(int dist)
+void Gripper::setGripper(int dist)
 {
 
-  sstream ss;
+  std::ostringstream ss;  
   
   ss << "setdist "<< dist << endl;
   string s = ss.str();
   
-    length = strlen(s.c_str());
+    int length = strlen(s.c_str());
     
-     write(*sock,s.c_str(),length);
+     write(sock,s.c_str(),length);
   
 }
 
@@ -75,10 +75,10 @@ int Gripper::setGripper(int dist)
 void Gripper::stopGripper()
 {
 
-  string "stop\n"
+  string stop = "stop\n";
   
-  length = strlen(s.c_str());
+  int length = strlen(stop.c_str());
     
-     write(*sock,s.c_str(),length);
+     write(sock,stop.c_str(),length);
   
 }
