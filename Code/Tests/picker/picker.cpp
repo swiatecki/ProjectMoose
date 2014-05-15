@@ -121,16 +121,16 @@ string type2str(int type) {
 
 // Init = blue
 
-int hsv_hl = 67;
-int hsv_hu = 97;
-int hsv_sl = 151;
+int hsv_hl = 74;
+int hsv_hu = 90;
+int hsv_sl = 122;
 int hsv_su = 255;
 int hsv_vl = 21;
 int hsv_vu = 255;
 
 int fusk = 0;
 
-
+Gripper gr;
 
  
 int main(int argc, char *argv[]){
@@ -141,6 +141,8 @@ int main(int argc, char *argv[]){
    // Default
     logfilename = "defaultLog.txt";
     
+
+
     
   if(argc < 2){
     
@@ -274,6 +276,7 @@ cameraError.ready =0;
 cameraError.x = -999;
 cameraError.y = -999;
 // Spawn a cameraThread
+
   
   pthread_t cameraThreadID;
   
@@ -294,6 +297,10 @@ cameraError.y = -999;
   
   
   
+  // Connect to gripper
+  
+  gr.startGripper();
+  
   
   ///
 
@@ -310,13 +317,16 @@ cameraError.y = -999;
  char in;
   while(runState){
     
-   cin >> in;
+   if(!endgame){
+     
+     cin >> in;
    
    if(in == 'e'){
       endgame = 1;
      cout << "hooo" <<endl;
   }
   
+   }
   
   }
   
@@ -348,7 +358,7 @@ cameraError.y = -999;
   cout << "network closed" << endl; 
   // Write log
   
-  
+  gr.stopGripper();
   
   
  return 0; 
@@ -512,18 +522,18 @@ cv::namedWindow("Histogram", CV_WINDOW_AUTOSIZE); //create a window with the nam
 
 if(picknplace && debugMonitor){
 //cv::namedWindow("HSV",CV_WINDOW_AUTOSIZE);
-cv::namedWindow( "Contours", CV_WINDOW_AUTOSIZE );
+//cv::namedWindow( "Contours", CV_WINDOW_AUTOSIZE );
 }
 
 
 
-int initShutter = 370; // 174 for BW, max 800 for 60 fps, 
+int initShutter = 204; // 174 for BW, max 800 for 60 fps, 
 
 int shutterVal = initShutter;
 
 
 int threshold = 31;
-//int cannyMin = 43;
+int cannyMin = 128;
 
 // cv::Scalar lower = cv::Scalar(114, 135, 135);
  
@@ -540,12 +550,12 @@ cv::createTrackbar("Shutter","Non-filtered",&shutterVal,4095,shutterCB,NULL);
 // Canny treshold
 
 cv::createTrackbar("Threshold","Non-filtered",&threshold,255,NULL,NULL);
-cv::createTrackbar("H","Binary",&hsv_hl,255,NULL,NULL);
-cv::createTrackbar("H low","Binary",&hsv_hu,255,NULL,NULL);
-cv::createTrackbar("S","Binary",&hsv_sl,255,NULL,NULL);
-cv::createTrackbar("S Low","Binary",&hsv_su,255,NULL,NULL);
-cv::createTrackbar("V","Binary",&hsv_vl,255,NULL,NULL);
-cv::createTrackbar("V Low","Binary",&hsv_vu,255,NULL,NULL);
+cv::createTrackbar("H low","Binary",&hsv_hl,179,NULL,NULL);
+cv::createTrackbar("H upper","Binary",&hsv_hu,179,NULL,NULL);
+cv::createTrackbar("S low","Binary",&hsv_sl,255,NULL,NULL);
+cv::createTrackbar("S up","Binary",&hsv_su,255,NULL,NULL);
+cv::createTrackbar("V low","Binary",&hsv_vl,255,NULL,NULL);
+cv::createTrackbar("V up","Binary",&hsv_vu,255,NULL,NULL);
 
 cv::createTrackbar("Dummy","Binary",&fusk,1,NULL,NULL);
 
@@ -584,7 +594,7 @@ cv::Size s;
 cv::Scalar greenColor = cv::Scalar( 0,255,0 );
 float distX,distY;
 
-
+Timing gripTmr;
 
 Guppy g;
 
@@ -841,15 +851,11 @@ std::string cmd = strs.str();
 	  // Send the down commando
 	    
 	    
-	     Gripper gr;
-	    
-	    
-	    gr.startGripper();
+	 
 	    
 	    
 	    gr.setGripper(90);
 	    
-	    gr.stopGripper();
 	    
 	    
 	    
@@ -862,7 +868,7 @@ std::string cmd = strs.str();
 	    double ya = tmp.tool[5];
 	    
 	   // z = z-0.20;
-	    z = 0.39; // real = 40 . Higher number -> up
+	    z = 0.40; // real = 40 . Higher number -> up
 	    y = y-0.11;
 	    strs.clear();
 	    strs.str("");
@@ -880,11 +886,76 @@ std::string cmd = strs.str();
 	    robot.addCmd(cmd,0);
 	      robot.run();
 	      sentEndgame = true;
+	      gripTmr.setStart();
 	      
-	}else{
+	}else if(endgame < 2){
 	  
-	  cout << "endgame sent, wait.. " << endl;
+	  // Downcommand sent, lets grip and go up!!
+	  
+	  
+	  gripTmr.setStop();
+	  //cout << gripTmr.elapsedTimems() << endl;
+	  if(gripTmr.elapsedTimems() > 1500){
+	    
+	   
+	    gr.setGripper(50);   
+	
+	    
+	    gripTmr.setStart();
+	    endgame =2;
+	    
+	    
+	    
+	    
+	    
+	    
+	    
+	  }
+	
+	  
+	  
+	  
 	}
+	else if(endgame < 3){
+	    
+	     gripTmr.setStop();
+	  //cout << gripTmr.elapsedTimems() << endl;
+		  if(gripTmr.elapsedTimems() > 4000){
+		    
+		    
+		    
+		    double x = tmp.tool[0];
+		    double y = tmp.tool[1];
+		    double z = tmp.tool[2];
+		    
+		    double r = tmp.tool[3];
+		    double p = tmp.tool[4];
+		    double ya = tmp.tool[5];
+		    
+		
+		    z = 0.60; // real = 40 . Higher number -> up
+		    y = y+0.11;
+		     strs.clear();
+		    strs.str("");
+		    
+		    
+		    strs << "movel(p[" << x << ", "<< y <<", " << z << ", "<< r << ", "<< p <<", "<< ya << "])";
+		    std::string cmd = strs.str();  
+
+		    
+		    cout << cmd << endl;
+		    
+		    
+		    
+		  
+		    robot.addCmd(cmd,0);
+		      robot.run();
+		      
+		      endgame++;
+		    
+		  }
+	  
+	  }
 	    
 	    
 	    
@@ -1218,7 +1289,7 @@ ss << errMsg[0] << "@" << cameraError.areaOfObject;
   
 
   
-   if(securityStop){
+   if(securityStop && !endgame){
     
     cout << endl << "SECURITY STOPPED (soft) " << reason << endl;
     

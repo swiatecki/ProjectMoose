@@ -15,6 +15,7 @@ public:
   
 private:
   int sock;
+  double targetDist;
   
 };
 

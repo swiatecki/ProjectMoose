@@ -67,7 +67,17 @@ void Gripper::setGripper(int dist)
     int length = strlen(s.c_str());
     
      write(sock,s.c_str(),length);
+     targetDist = dist;
+     cout << "Gripper: Setting dist to " << dist << endl;
   
+     
+  struct timespec time1;
+  time1.tv_sec =1;
+  time1.tv_nsec = 0; 
+     
+   nanosleep(&time1,NULL); // Lets sleep for 8ms/one tick
+    
+     
 }
 
 
@@ -75,10 +85,16 @@ void Gripper::setGripper(int dist)
 void Gripper::stopGripper()
 {
 
+  
+  
   string stop = "stop\n";
   
   int length = strlen(stop.c_str());
     
      write(sock,stop.c_str(),length);
+     
+     cout << "Gripper: Stopping" << endl;
+     
+     close(sock);
   
 }
