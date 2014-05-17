@@ -26,22 +26,23 @@ disp('In Hz')
 1/(a/1000)
 
 %% Compare actual/target velcity and actual/taget acc.
-% GENERATES: step01.eps
-
-f = figure()
-set(f,'name','Velocity','numbertitle','off')
+% GENERATES: network-delay.eps
+close all;
+f = figure();
+set(f,'name','Network delay','numbertitle','off')
 hold all
-title('\bf Velocity')
+title({'\bf Robot arm delay', 'Samplerate: 125 Hz'},'FontSize',16)
 plot(qdTarget(:,1),'*b','MarkerSize',10)
 plot(qdActual(:,1),'or','MarkerSize',10)
 stairs(test01,'g-.','LineWidth',2)
-legend('Target velocity','Actual velocity','Step')
-xlim([248 255]);
-ylim([-0.01 0.15])
+legend('Target velocity','Actual velocity','Command sent')
+xlim([250 258]);
+ylim([-0.01 0.5])
+set(gca,'fontsize',14); % Font size for labels etc.
 xlabel('Sample no.');
 ylabel('Velocity (rad/s)');
-set(gcf,'paperunits','centimeters','Paperposition',[0 0 14 8])
-saveas(gcf,'../../step01.eps','psc2')
+set(gcf,'paperunits','centimeters','Paperposition',[0 0 14 10])
+saveas(gcf,'export/network-delay','epsc')
 hold off
 
 
