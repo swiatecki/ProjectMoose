@@ -35,6 +35,7 @@ void ctrlCHandler(int s);
 //Globals
  int sd;
  int runState = 1;
+ string logfilename;
 
 
  
@@ -82,9 +83,85 @@ void stopNet(){
   close(sd);
   
 }
+enum direction{
+  accelerate,
+  decelerate
+  
+};
+
+direction theDir;
 
  
-int main(){
+int main(int argc, char *argv[]){
+  
+  logfilename = "nope.txt";
+  
+   if(argc < 2){
+    
+   
+cout << "Please specify either --acc or --dec" << endl;
+exit(1);
+
+    
+  }else{
+    for(int i=1;i<argc;++i){
+      
+      
+      if(string(argv[i]) == "--norobot" || string(argv[i]) == "-n"){
+	
+	// noRobot = 1;
+	  cout << " NO ROBOT " << endl;
+      }
+      
+      if(string(argv[i]) == "--acc" || string(argv[i]) == "-a"){
+	
+	 theDir = accelerate;
+	  cout << " Slow -> Fast (should be OK) " << endl;
+	  logfilename = "accelerate.txt";
+      }
+      
+     if(string(argv[i]) == "--dec" || string(argv[i]) == "-d"){
+	
+	theDir = decelerate;
+	  cout << " Fast -> Slow (should fail) " << endl;
+	  logfilename = "decelerate.txt";
+      }
+	
+     
+      
+      if(string(argv[i]) == "--verbose" || string(argv[i]) == "-v"){
+		 // verbose = 1;
+	  cout << " Verbose " << endl;
+      }
+	
+      if(string(argv[i]) == "--log"){
+	logfilename = argv[i+1];
+	  cout << " filename set to  " << argv[i+1] << endl;
+      }
+      
+      
+      if(string(argv[i]) == "--help" || string(argv[i]) == "-h"){
+	
+	  cout << "Usage: " <<endl;
+	 // cout << "-n or --norobot: \t dont move robot. Good for calibrating camera. " << endl;
+	//  cout << "-v or --verbose: \t Alot of nice debugging info" << endl;
+	 // cout << "--log: \t Where to save the log(default: nope.txt) , ex: --log somelog.txt" << endl;
+	  cout << "--acc: \t Test Accelleration - saves to accelerate.txt" << endl;
+	 cout << "--dec: \t Test Deceleration - saves to decelerate.txt" << endl;
+	  exit(0);
+      }
+	
+	
+	
+      }
+      
+     
+      
+  }
+  
+  
+  
+  
   
   // Lets catch Ctrl+C
   struct sigaction sigIntHandler;
@@ -206,7 +283,7 @@ void *recvThread(void *arg){
   
   // Write logs
 
- writeLog(log,"test02.txt");
+ writeLog(log,logfilename);
  
   
   
@@ -250,15 +327,36 @@ void *cmdThread(void *arg){
   queue<cmd> cmdList;
 
   // 63 = 0.5s
-  cmd cmd0(250,"movel(p[-0.144, -0.530, 0.579, 2.2128, 2.0803, 0],1.2,0.3,1,0)\n"); // Go to start
-  
+//  cmd cmd0(250,"movel(p[-0.144, -0.530, 0.579, 2.2128, 2.0803, 0],1.2,0.3,1,0)\n"); // Go to start
+   cmd cmd0(250,"movel(p[-0.207,  -0.546, 0.579, 1.23, -2.862, 0],1.2,0.3,1,0)\n"); // Go to start
+    cmdList.push(cmd0);
+    
+    
   cmd cmd1(125,"speedl([0.1, 0, 0, 0, 0, 0],1.2,1)\n");
   cmd cmd2(125,"speedl([0.4, 0, 0, 0, 0, 0],1.2,1)\n");
   
-  
-   cmdList.push(cmd0);
+   if(theDir == accelerate){
+     
   cmdList.push(cmd1);
   cmdList.push(cmd2);
+  
+  
+  }
+  
+  else if(theDir == decelerate){
+    
+      cmdList.push(cmd2);
+  cmdList.push(cmd1);
+  
+  }
+  
+  
+  
+  
+  
+  
+
+
   
   
   
