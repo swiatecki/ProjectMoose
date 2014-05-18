@@ -92,7 +92,10 @@ int main(int argc, char *argv[]){
  
  
  // Go to start
-cmdStart.addCmd("movel(p[-0.144, -0.530, 0.579, 2.2128, 2.0803, 0],1.0,0.3,0,0)",250);
+ 
+ 
+ 
+cmdStart.addCmd("movel(p[-0.144, -0.530, 0.579, 1.23, -2.862, 0],1.0,0.3,0,0)",250);
 cmdStart.run();
   
 
@@ -118,7 +121,7 @@ int counter = 0;
 
  timer0.setStart();
  
- double ref = -1.2;
+ double ref = 1.8; // Reference posistion in radians!
  // double ref = 1.6;
  
  double e,signal = 0.0;
@@ -129,8 +132,10 @@ int counter = 0;
   * 
   * WHILE
   */
+  slogData tmp;
  
- 
+  int saturated =0;
+  
   while(runState){
     
      /* READ DATA */
@@ -156,8 +161,7 @@ int counter = 0;
  
 
   timer0.setStop();
- 
- //timer0.setStop();
+
  
  rd1.setBuffer(buffer);
 
@@ -173,7 +177,7 @@ int counter = 0;
   
  // Add to Log
  
- slogData tmp;
+
  
  
   tmp.robotTime = rd1.getTime(); // Returns double
@@ -188,9 +192,11 @@ int counter = 0;
  rd1.getqdTarget(tmp.qdTarget);
  tmp.test01 = 0;
   
+ // Insert saturation !!!
+ 
    //cout << "qactual tmp: " << tmp.qActual[0] << "," << tmp.qActual[1] << ","<< tmp.qActual[2] << ","<< tmp.qActual[3] << ","<< tmp.qActual[4] << "," << tmp.qActual[5] << "," << endl;
   
-  log.push_back(tmp);
+  
 
     
  
@@ -200,6 +206,7 @@ int counter = 0;
    * 
    * */
   
+  // Determine error
   
   e = ref-tmp.qActual[0];
   
@@ -210,24 +217,34 @@ int counter = 0;
   
   
  
-   //signal = e*18.1970;
-  signal = e*12;
+   //signal = e*18.8 // Gain if matlab was to 
+  signal = e*18;
+ 
+// signal = e*18;
   
    if(signal> 3.2){
      signal = 3.2;
+     saturated = 1;
   }else if(signal< -3.2){
-    
+    saturated = 1;
     signal = -3.2;
+  }else{
+    saturated =0;
+    
   }
   
   
   
-  
+  /*
   if(signal < 0.01 && signal > 0 ){
     signal = 0;
   }else if(signal > -0.01 && signal < 0){
         signal = 0;
-  }
+  }*/
+  
+  tmp.test01 = saturated;
+  
+  log.push_back(tmp);
   
   
   
@@ -249,7 +266,7 @@ std::string cmd = strs.str();
     
       
   robot.addCmd(cmd,0);
-  robot.run();
+ robot.run();
 
    struct timespec time1;
   time1.tv_sec =0;
@@ -295,7 +312,7 @@ std::string cmd = strs.str();
   // Write log
   
   
-  
+  cout << "current base: " <<  tmp.qActual[0] << endl;
   
  return 0; 
 }

@@ -121,10 +121,10 @@ string type2str(int type) {
 
 // Init = blue
 
-int hsv_hl = 74;
-int hsv_hu = 90;
-int hsv_sl = 122;
-int hsv_su = 255;
+int hsv_hl = 79;
+int hsv_hu = 88;
+int hsv_sl = 163;
+int hsv_su = 196;
 int hsv_vl = 21;
 int hsv_vu = 255;
 
@@ -527,7 +527,7 @@ if(picknplace && debugMonitor){
 
 
 
-int initShutter = 204; // 174 for BW, max 800 for 60 fps, 
+int initShutter = 280; // 174 for BW, max 800 for 60 fps, 
 
 int shutterVal = initShutter;
 
