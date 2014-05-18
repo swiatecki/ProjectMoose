@@ -1,12 +1,12 @@
 Model {
-  Name			  "model01_limited"
+  Name			  "model02"
   Version		  7.9
   MdlSubVersion		  0
   GraphicalInterface {
     NumRootInports	    0
     NumRootOutports	    0
     ParameterArgumentNames  ""
-    ComputedModelVersion    "1.4"
+    ComputedModelVersion    "1.6"
     NumModelReferences	    0
     NumTestPointedSignals   0
   }
@@ -27,9 +27,9 @@ Model {
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "ex16"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Tue Mar 18 11:48:20 2014"
-  RTWModifiedTimeStamp	  316962534
-  ModelVersionFormat	  "1.%<AutoIncrement:4>"
+  LastModifiedDate	  "Sun May 18 14:01:58 2014"
+  RTWModifiedTimeStamp	  322322495
+  ModelVersionFormat	  "1.%<AutoIncrement:6>"
   ConfigurationManager	  "None"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -67,6 +67,7 @@ Model {
     $ObjectID		    1
     $ClassName		    "Simulink.SimulationData.ModelLoggingInfo"
     model_		    "Untitled1"
+    signals_		    []
     overrideMode_	    [0.0]
     Array {
       Type		      "Cell"
@@ -778,8 +779,8 @@ Model {
     }
   }
   System {
-    Name		    "model01_limited"
-    Location		    [1451, 126, 2378, 685]
+    Name		    "model02"
+    Location		    [74, 138, 1001, 697]
     Open		    on
     ModelBrowserVisibility  off
     ModelBrowserWidth	    200
@@ -795,10 +796,20 @@ Model {
     ReportName		    "simulink-default.rpt"
     SIDHighWatermark	    "15"
     Block {
+      BlockType		      RateLimiter
+      Name		      "Acceleration\nRate Limiter"
+      SID		      "15"
+      Position		      [455, 170, 485, 200]
+      ZOrder		      -7
+      RisingSlewLimit	      "15"
+      FallingSlewLimit	      "-15"
+      SampleTimeMode	      "inherited"
+    }
+    Block {
       BlockType		      Gain
       Name		      "Gain"
       SID		      "8"
-      Position		      [390, 170, 420, 200]
+      Position		      [255, 170, 285, 200]
       ZOrder		      -8
       Gain		      "Kp"
       ParamDataTypeStr	      "Inherit: Inherit via internal rule"
@@ -807,21 +818,11 @@ Model {
       SampleTime	      "T"
     }
     Block {
-      BlockType		      RateLimiter
-      Name		      "Rate Limiter"
-      SID		      "15"
-      Position		      [590, 170, 620, 200]
-      ZOrder		      -7
-      RisingSlewLimit	      "15"
-      FallingSlewLimit	      "-15"
-      SampleTimeMode	      "inherited"
-    }
-    Block {
       BlockType		      DiscreteTransferFcn
       Name		      "Robot"
       SID		      "4"
       Ports		      [1, 1]
-      Position		      [660, 167, 720, 203]
+      Position		      [525, 167, 585, 203]
       ZOrder		      -2
       InputPortMap	      "u0"
       Numerator		      "[0.008]"
@@ -829,23 +830,11 @@ Model {
       SampleTime	      "T"
     }
     Block {
-      BlockType		      Saturate
-      Name		      "Saturation"
-      SID		      "6"
-      Ports		      [1, 1]
-      Position		      [480, 170, 510, 200]
-      ZOrder		      -15
-      InputPortMap	      "u0"
-      UpperLimit	      "3.2"
-      LowerLimit	      "-3.2"
-      SampleTime	      "T"
-    }
-    Block {
       BlockType		      Scope
       Name		      "Scope"
       SID		      "13"
       Ports		      [1]
-      Position		      [820, 69, 850, 101]
+      Position		      [685, 154, 715, 186]
       ZOrder		      -3
       Floating		      off
       Location		      [134, 660, 938, 1190]
@@ -871,10 +860,22 @@ Model {
       SampleTime	      "0"
     }
     Block {
+      BlockType		      Saturate
+      Name		      "Speed \nSaturation"
+      SID		      "6"
+      Ports		      [1, 1]
+      Position		      [345, 170, 375, 200]
+      ZOrder		      -15
+      InputPortMap	      "u0"
+      UpperLimit	      "3.2"
+      LowerLimit	      "-3.2"
+      SampleTime	      "T"
+    }
+    Block {
       BlockType		      Step
       Name		      "Step"
       SID		      "12"
-      Position		      [75, 170, 105, 200]
+      Position		      [105, 170, 135, 200]
       ZOrder		      -22
       Time		      "0"
       After		      "initE"
@@ -885,7 +886,7 @@ Model {
       Name		      "Sum"
       SID		      "10"
       Ports		      [2, 1]
-      Position		      [220, 175, 240, 195]
+      Position		      [190, 175, 210, 195]
       ZOrder		      -18
       ShowName		      off
       IconShape		      "round"
@@ -899,7 +900,7 @@ Model {
       Name		      "To Workspace"
       SID		      "14"
       Ports		      [1]
-      Position		      [795, 230, 855, 260]
+      Position		      [670, 215, 730, 245]
       ZOrder		      -7
       VariableName	      "simout"
       MaxDataPoints	      "inf"
@@ -909,7 +910,7 @@ Model {
     Line {
       SrcBlock		      "Gain"
       SrcPort		      1
-      DstBlock		      "Saturation"
+      DstBlock		      "Speed \nSaturation"
       DstPort		      1
     }
     Line {
@@ -923,18 +924,20 @@ Model {
       SrcPort		      1
       Points		      [35, 0; 0, 5]
       Branch {
-	Points			[0, 95; -530, 0]
+	Labels			[2, 0]
+	Points			[0, 65; -425, 0]
 	DstBlock		"Sum"
 	DstPort			2
       }
       Branch {
 	Points			[0, -5; 20, 0]
 	Branch {
+	  Points		  [10, 0]
 	  DstBlock		  "To Workspace"
 	  DstPort		  1
 	}
 	Branch {
-	  Points		  [15, 0; 0, -100]
+	  Points		  [15, 0; 0, -15]
 	  DstBlock		  "Scope"
 	  DstPort		  1
 	}
@@ -947,13 +950,13 @@ Model {
       DstPort		      1
     }
     Line {
-      SrcBlock		      "Saturation"
+      SrcBlock		      "Speed \nSaturation"
       SrcPort		      1
-      DstBlock		      "Rate Limiter"
+      DstBlock		      "Acceleration\nRate Limiter"
       DstPort		      1
     }
     Line {
-      SrcBlock		      "Rate Limiter"
+      SrcBlock		      "Acceleration\nRate Limiter"
       SrcPort		      1
       DstBlock		      "Robot"
       DstPort		      1
