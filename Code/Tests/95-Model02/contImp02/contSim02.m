@@ -7,7 +7,7 @@ format short
 %load log_kp18_step03.txt
 %load kp12.txt
 %load kp11.txt
-load delayLogDefault.txt	
+%load delayLogDefault.txt	
 
 T = 1/125;
 
@@ -66,10 +66,12 @@ ylabel('Relative Position [rad]');
 plot(tv,simout.signals.values,'linewidth',2)
 xlim([0 1.6]);
 ylim([-0.1 1])
-plot(tv,saturation)
+%plot(tv,saturation)
 set(gca,'fontsize',14); % Font size for labels etc.
-title({'Actual Pos vs Simulated pos ',sprintf('Kp = %d, Step = %f',Kp,initE)})
+title({'3 sample delay','Actual position vs Simulated position ',sprintf('Kp = %d, Step = %f',Kp,initE)})
 legend('Actual','Simulated');
+set(gcf,'paperunits','centimeters','Paperposition',[0 0 14 8])
+saveas(gcf,'export/k15s3.eps','epsc')
 
 hold off;
 
@@ -102,6 +104,8 @@ ylim([-0.1 1])
 
 set(gca,'fontsize',14); % Font size for labels etc.
 plot(tv,simout.signals.values,'linewidth',2)
-title(sprintf('Quick: Actual Pos vs Simulated pos, Kp = %d, Step = %f',Kp,initE))
+title({'2 sample delay','Actual position vs simulated position ',sprintf('Kp = %d, Step = %f',Kp,initE)})
 legend('Actual','Simulated');
+set(gcf,'paperunits','centimeters','Paperposition',[0 0 14 8])
+saveas(gcf,'export/k15s2.eps','epsc')
 hold off;
