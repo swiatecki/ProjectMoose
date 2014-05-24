@@ -31,8 +31,8 @@ robotTime = delayLog(:,1);
 
 %Systime
 sysTime = delayLog(:,2);
-initE = 0.691674
-Kp = 15;
+initE = 0.691684
+Kp = 18;  % REMEBER TO CHANGE THE SAVE FILE AS!!!
 %%
 
 f = figure()
@@ -71,7 +71,7 @@ set(gca,'fontsize',14); % Font size for labels etc.
 title({'3 sample delay','Actual position vs Simulated position ',sprintf('Kp = %d, Step = %f',Kp,initE)})
 legend('Actual','Simulated');
 set(gcf,'paperunits','centimeters','Paperposition',[0 0 14 8])
-saveas(gcf,'export/k15s3.eps','epsc')
+saveas(gcf,'export/k18s3.eps','epsc')
 
 hold off;
 
@@ -107,5 +107,5 @@ plot(tv,simout.signals.values,'linewidth',2)
 title({'2 sample delay','Actual position vs simulated position ',sprintf('Kp = %d, Step = %f',Kp,initE)})
 legend('Actual','Simulated');
 set(gcf,'paperunits','centimeters','Paperposition',[0 0 14 8])
-saveas(gcf,'export/k15s2.eps','epsc')
+saveas(gcf,'export/k18s2.eps','epsc')
 hold off;

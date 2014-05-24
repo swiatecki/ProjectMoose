@@ -527,12 +527,12 @@ if(picknplace && debugMonitor){
 
 
 
-int initShutter = 280; // 174 for BW, max 800 for 60 fps, 
+int initShutter = 60; // 174 for BW, max 800 for 60 fps, 
 
 int shutterVal = initShutter;
 
 
-int threshold = 31;
+int threshold = 33;
 int cannyMin = 128;
 
 // cv::Scalar lower = cv::Scalar(114, 135, 135);

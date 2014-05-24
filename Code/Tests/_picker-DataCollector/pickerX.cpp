@@ -39,6 +39,9 @@ int saveImgs =0;
 int histogram =0;
 int controller =0;
 int picknplace = 0;
+
+int x1=0,x2=0,x3=0;
+
 int endgame;
 double gain = 10;
 
@@ -195,6 +198,15 @@ int main(int argc, char *argv[]){
 	 picknplace = 1;
 	  cout << " Picking N Placing " << endl;
       }
+      
+      
+      //Spec ops
+      if(string(argv[i]) == "--x1" || string(argv[i]) == "-x1"){
+	
+	 x1 = 1;
+	  cout << " Saving raw img1 " << endl;
+      }
+      
       
       if(string(argv[i]) == "--help" || string(argv[i]) == "-h"){
 	
@@ -476,6 +488,9 @@ std::vector<cmdData> cmd;
 
 cv::namedWindow("Binary", CV_WINDOW_AUTOSIZE); //create a window with the name "binary"
 
+cv::namedWindow("x", CV_WINDOW_AUTOSIZE); //create a window with the name "binary"
+
+
 if(histogram){
 cv::namedWindow("Histogram", CV_WINDOW_AUTOSIZE); //create a window with the name "Histogram"
 }
@@ -487,7 +502,7 @@ if(picknplace && debugMonitor){
 
 
 
-int initShutter = 280; // 174 for BW, max 800 for 60 fps, 
+int initShutter = 159; // 174 for BW, max 800 for 60 fps, 280 is nice 
 
 int shutterVal = initShutter;
 
@@ -532,7 +547,7 @@ cv::Mat histo;
 
 cap.open(CV_CAP_DC1394); // Open first firewire camera. in 2.3 use CV_CAP, in 2.5 use CV::CAP
 cap.set(CV_CAP_PROP_WHITE_BALANCE_BLUE_U,655); // 794 for b/w, 655 for color
-cap.set(CV_CAP_PROP_WHITE_BALANCE_RED_V,437);
+cap.set(CV_CAP_PROP_WHITE_BALANCE_RED_V,488); // 437
 cap.set(CV_CAP_PROP_EXPOSURE,initShutter); // "Shutter" in coriander
 cap.set(CV_CAP_PROP_FPS,fps);
 cap.set(CV_CAP_PROP_GAMMA,0);
@@ -610,6 +625,12 @@ cap >> frame;
 
 tmrFrame.setStop();
 
+if(x1){
+  const string fn = "export/rawframe.png";
+cv::imwrite(fn,frame);
+
+}
+
 
 newtime = tmrFrame.elapsedTimeus();
 
@@ -627,9 +648,21 @@ tmrProcessing.setStart();
 
 submatrix = cv::Mat(frame,roi);
 
+if(x1){
+  const string fn2 = "export/submatrix.png";
+cv::imwrite(fn2,submatrix);
+
+}
+
 
 // Get color image, decode bayer BGGR.  
 cv::cvtColor(submatrix,colorFrame,CV_BayerBG2RGB);
+ cv::imshow("x",colorFrame); 
+
+if(x1){
+  const string fn3 = "export/RGB.png";
+cv::imwrite(fn3,colorFrame);
+}
 
 if(picknplace){
   blockTracking(colorFrame,hsvFrame,tresholdedFrame,contourOutput,mu,mc,s,centerOfFrame);
@@ -638,7 +671,10 @@ if(picknplace){
   blackDotTracking(colorFrame,grey,tresholdedFrame,threshold,mu,mc,s,centerOfFrame);
 }
 
-
+if(x1){
+  const string fn3 = "export/grey.png";
+cv::imwrite(fn3,grey);
+}
 
 //tmr0.setStop();
 cl.colorConversion = 99; // Dummy
@@ -966,7 +1002,12 @@ cout << setprecision(9)
       histo =  g.histogramGS(grey,threshold);
 	
       
-      
+if(x1){
+const string fn3 = "export/histogram.png";
+cv::imwrite(fn3,histo);
+
+}
+
       
       cv::imshow("Histogram",histo);
       
@@ -1009,6 +1050,12 @@ else if(debugMonitor){
     
      cv::cvtColor(grey, grey, CV_GRAY2RGB);
     cv::circle( grey, mc, 5, greenColor, -1, 8, 0 );
+    
+ if(x1){
+const string fn3 = "export/greyWdot.png";
+cv::imwrite(fn3,grey);
+x1=0;
+}
 
 
     // Show the image to the user

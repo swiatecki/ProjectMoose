@@ -79,7 +79,7 @@ cv::Mat _hist;
 cv::calcHist(&image, 1, 0, cv::Mat(), _hist, 1, &histSize, &histRange, uniform, accumulate );
 
 
-int hist_w = 512; int hist_h = 400;
+int hist_w = 1024; int hist_h = 400;
 int bin_w = cvRound( (double) hist_w/histSize );
   
 
@@ -89,7 +89,13 @@ cv::Mat histImage( hist_h, hist_w, CV_8UC3, cv::Scalar( 0,0,0) );
 
 cv::normalize(_hist, _hist, 0, histImage.rows, cv::NORM_MINMAX, -1, cv::Mat() );
 
+_hist = _hist*100;
 
+cv::threshold(_hist,_hist,300,0,cv::THRESH_TRUNC);
+
+//cv::normalize(_hist, _hist,1, 0, cv::NORM_L2,-1, cv::noArray() );
+
+//(InputArray src, OutputArray dst, double alpha=1, double beta=0, int norm_type=NORM_L2, int dtype=-1, InputArray mask=noArray() 
 
 /// Draw for each channel
   for( int i = 1; i < histSize; i++ )
