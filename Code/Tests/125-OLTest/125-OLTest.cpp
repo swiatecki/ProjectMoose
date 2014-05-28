@@ -39,8 +39,11 @@ int saveImgs =0;
 int histogram =0;
 int controller =0;
 int picknplace = 0;
+
+int x1=0,x2=0,x3=0;
+
 int endgame;
-double gain = 12;
+double gain = 10;
 
 std::map<int,string> errMsg;
 
@@ -196,6 +199,15 @@ int main(int argc, char *argv[]){
 	  cout << " Picking N Placing " << endl;
       }
       
+      
+      //Spec ops
+      if(string(argv[i]) == "--x1" || string(argv[i]) == "-x1"){
+	
+	 x1 = 1;
+	  cout << " Saving raw img1 " << endl;
+      }
+      
+      
       if(string(argv[i]) == "--help" || string(argv[i]) == "-h"){
 	
 	  cout << "Usage: " <<endl;
@@ -250,7 +262,7 @@ int main(int argc, char *argv[]){
  
  
  // Go to start
-cmdStart.addCmd("movel(p[0.193,  -0.546, 0.643, 1.23, -2.862, 0],1.0,0.3,0,0)",250);
+cmdStart.addCmd("movel(p[0.448,  -0.206, 0.643, 1.23, -2.862, 0],1.0,0.3,0,0)",500);
 cmdStart.run();
   
 
@@ -437,47 +449,7 @@ cv::Scalar upper = cv::Scalar(hsv_hu, hsv_su, hsv_vu);
   
   cv::inRange(_hsv,lower,upper,_thresholdFrame);
   
-  //std::vector<std::vector<cv::Point> > contours;
-  
- /* vector< vector<cv::Point> > contours;
-  
-  std::vector<cv::Vec4i> hierarchy;
-  
-   
-   cv::Scalar greenColor = cv::Scalar( 0,255,0 );
-  
-   // Lets try canny
-   
-  cv::Canny(_thresholdFrame,_thresholdFrame,50,200);
-   
-cv::findContours(_thresholdFrame,contours,cv::noArray(),CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE);
-  
-
-//cout << type2str(_thresholdFrame.type()) << endl;
-
- //for( int i = 0; i < contours.size(); i++ )  { 
-      cv::Mat test;
-	  try{
-	  cv::drawContours(_RGBMat,contours,-1,greenColor);
-	  }
-
-	  catch(cv::Exception e){
-	    
-	    cout << "SHIT!" <<endl;
-	  }
-
-//}
-
-cout << contours.size() << endl;*/
-
-   
-   
-   
-  // cv::Rect a = cv::boundingRect(_thresholdFrame);
-
-  // cv::rectangle(_RGBMat,a,greenColor);
-  
-  /* SIMPLE START */
+ 
   
   // Calculate momets
 _mu = cv::moments(_thresholdFrame,true);
@@ -516,6 +488,9 @@ std::vector<cmdData> cmd;
 
 cv::namedWindow("Binary", CV_WINDOW_AUTOSIZE); //create a window with the name "binary"
 
+cv::namedWindow("x", CV_WINDOW_AUTOSIZE); //create a window with the name "binary"
+
+
 if(histogram){
 cv::namedWindow("Histogram", CV_WINDOW_AUTOSIZE); //create a window with the name "Histogram"
 }
@@ -527,13 +502,13 @@ if(picknplace && debugMonitor){
 
 
 
-int initShutter = 205; // 174 for BW, max 800 for 60 fps, 
+int initShutter = 159; // 174 for BW, max 800 for 60 fps, 280 is nice 
 
 int shutterVal = initShutter;
 
 
-int threshold = 44;
-//int cannyMin = 128;
+int threshold = 31;
+int cannyMin = 128;
 
 // cv::Scalar lower = cv::Scalar(114, 135, 135);
  
@@ -572,7 +547,7 @@ cv::Mat histo;
 
 cap.open(CV_CAP_DC1394); // Open first firewire camera. in 2.3 use CV_CAP, in 2.5 use CV::CAP
 cap.set(CV_CAP_PROP_WHITE_BALANCE_BLUE_U,655); // 794 for b/w, 655 for color
-cap.set(CV_CAP_PROP_WHITE_BALANCE_RED_V,437);
+cap.set(CV_CAP_PROP_WHITE_BALANCE_RED_V,488); // 437
 cap.set(CV_CAP_PROP_EXPOSURE,initShutter); // "Shutter" in coriander
 cap.set(CV_CAP_PROP_FPS,fps);
 cap.set(CV_CAP_PROP_GAMMA,0);
@@ -614,7 +589,6 @@ uint64_t newtime = 0,difftmr = 0;
 
  double e =0;
  double initE =0;
- double initEr = 0;
  double initBase=0;  
  double initR =0;
 
@@ -651,6 +625,12 @@ cap >> frame;
 
 tmrFrame.setStop();
 
+if(x1){
+  const string fn = "export/rawframe.png";
+cv::imwrite(fn,frame);
+
+}
+
 
 newtime = tmrFrame.elapsedTimeus();
 
@@ -668,9 +648,21 @@ tmrProcessing.setStart();
 
 submatrix = cv::Mat(frame,roi);
 
+if(x1){
+  const string fn2 = "export/submatrix.png";
+cv::imwrite(fn2,submatrix);
+
+}
+
 
 // Get color image, decode bayer BGGR.  
 cv::cvtColor(submatrix,colorFrame,CV_BayerBG2RGB);
+ cv::imshow("x",colorFrame); 
+
+if(x1){
+  const string fn3 = "export/RGB.png";
+cv::imwrite(fn3,colorFrame);
+}
 
 if(picknplace){
   blockTracking(colorFrame,hsvFrame,tresholdedFrame,contourOutput,mu,mc,s,centerOfFrame);
@@ -679,7 +671,10 @@ if(picknplace){
   blackDotTracking(colorFrame,grey,tresholdedFrame,threshold,mu,mc,s,centerOfFrame);
 }
 
-
+if(x1){
+  const string fn3 = "export/grey.png";
+cv::imwrite(fn3,grey);
+}
 
 //tmr0.setStop();
 cl.colorConversion = 99; // Dummy
@@ -727,7 +722,12 @@ tmrIdle.setStart();
 
 
  
-
+if(!initBase){
+  
+  initBase = tmp.qActual[0];
+  
+  
+}
   
   
   /*
@@ -739,16 +739,10 @@ tmrIdle.setStart();
   
   
 /* SWING PART */
- if(!initBase){
-    
-    initBase = tmp.qActual[0];
-  }
-  
+
 if(!controller){
- 
-  //cout << "NO CONTROLLER, SWINGING!!" << endl;
       //base joint
-    if(tmp.qActual[0] > 1.2){
+    if(tmp.qActual[0] > 0.8){
       
       // keep swinging
       
@@ -779,7 +773,6 @@ pixeldist = signal;
       
       if(!initE){
 	initE = signal;
-	
 	//initR = 
 	//cout << "du leder efter:" << initR << "baseret på: X " << tmp.tool[0] << "og Y: "<< tmp.tool[1] <<endl;
       }
@@ -792,10 +785,7 @@ meters = signal;
       
 	
     radians = signal;
-      if(!initEr){
-	initEr = radians;
-	
-      }
+      
       // Apply controller...
       
     signal = signal*gain;
@@ -835,10 +825,6 @@ std::ostringstream strs;
 if(!securityStop){
      
 strs << "speedj([" << signal <<  ", 0, 0, 0, 0, 0],15,1)";
-
-}else{
-  strs << "stop(15)";
-  
 }
 
   
@@ -850,18 +836,17 @@ std::string cmd = strs.str();
     
    
     
-    if(cameraError.ready ==1 || securityStop){ 
+    if(cameraError.ready ==1 || securityStop){ // 20000 is OK, 16700 is OK, 
       
       if(!endgame){
 		  
-	   // Not in end game, transmit the command
+	   
 	
 	
 	
 	  robot.addCmd(cmd,0);
 	    robot.run();	
       }else{
-	// Endgame
 	// Screw the guys! Pick it up
 	if(!sentEndgame){
 	  // Send the down commando
@@ -989,7 +974,7 @@ std::string cmd = strs.str();
 if(cameraError.ready){
   /* ADD TO LOG */
     if(cameraError.ready == 1) {
-    robotLog.push_back(tmp);
+   
     }
 
 
@@ -997,8 +982,6 @@ if(cameraError.ready){
   
 if(verbose){
   
-  
-  cout << "----------------" << endl;
 cout << cmd << endl;
 cout << setprecision(9) 
 << "pixeldist : " << cameraError.x
@@ -1006,7 +989,7 @@ cout << setprecision(9)
 << "; radians : " << radians 
 <<"; Non limited output : " << nonLimitedSignal 
 <<", Limited: " << signal
-<< ", AoO: "<< cameraError.areaOfObject << "Base joint: " << tmp.qActual[0] <<  endl;
+<< ", AoO: "<< cameraError.areaOfObject << endl;
 
  
 }
@@ -1024,7 +1007,12 @@ cout << setprecision(9)
       histo =  g.histogramGS(grey,threshold);
 	
       
-      
+if(x1){
+const string fn3 = "export/histogram.png";
+cv::imwrite(fn3,histo);
+
+}
+
       
       cv::imshow("Histogram",histo);
       
@@ -1067,6 +1055,12 @@ else if(debugMonitor){
     
      cv::cvtColor(grey, grey, CV_GRAY2RGB);
     cv::circle( grey, mc, 5, greenColor, -1, 8, 0 );
+    
+ if(x1){
+const string fn3 = "export/greyWdot.png";
+cv::imwrite(fn3,grey);
+x1=0;
+}
 
 
     // Show the image to the user
@@ -1117,9 +1111,8 @@ cout << "logfilename: " << logfilename << endl;
 writeLog(robotLog,logfilename);
 writeCameraLog(camLog,"camLog.txt");
 
-cout << "Initial Base [rad]:" << initBase <<endl;
+
 cout << "Initial error[m]:" << initE <<endl;
-cout << "Initial error[rad]:" << initEr <<endl;
 cout << "Error at quit[rad]: "<< radians <<endl;
 cout << "Initial radius[m]: "<< g.getRadius(tmp.tool[0],tmp.tool[1]) <<endl;
 
@@ -1228,11 +1221,11 @@ int counter = 0;
  
  
  
- tmp.cameraDistXm = g.px2m(tmp.cameraDistXpx,g.getActualHeight(tmp.tool[2]));
+// tmp.cameraDistXm = g.px2m(tmp.cameraDistXpx,g.getActualHeight(tmp.tool[2]));
 
  
  
-  
+   robotLog.push_back(tmp);
   /* 
    * 
    * WRITE DATA
@@ -1247,8 +1240,9 @@ std::ostringstream strs;
 
 // Limit base operating area. First condition is to the "left"
 
-if(tmp.qActual[0] < 0.863 || tmp.qActual[0] > 2.157 || securityStop){
+/*if(tmp.qActual[0] < 0.863 || tmp.qActual[0] > 2.157 || securityStop){
   // Out of bounds. Override commands
+  strs << "stop(15)";
   securityStop = true;
   
   
@@ -1258,23 +1252,23 @@ ss << errMsg[1] << "@" << tmp.qActual[0] << "ns: aoo";
 
  reason = ss.str();
   
-}
+}*/
 
 int pxlMax = 200;
 if(picknplace){ pxlMax = 7000; }
 
 
-if(cameraError.areaOfObject > pxlMax || securityStop ){
+/*if(cameraError.areaOfObject > pxlMax || securityStop ){
 
   // Probably seeing the table now
-
+strs << "stop(15)";
 securityStop = true;
 stringstream ss;
 
 ss << errMsg[0] << "@" << cameraError.areaOfObject;
 
  reason = ss.str();
-}  
+} */ 
 
     
     
@@ -1283,7 +1277,7 @@ ss << errMsg[0] << "@" << cameraError.areaOfObject;
 
 
 
-strs << "stop(15)";
+
     
 
 
@@ -1309,7 +1303,7 @@ strs << "stop(15)";
   
    if(securityStop && !endgame){
     
-   //cout << endl << "SECURITY STOPPED (soft) " << reason << endl;
+    cout << endl << "SECURITY STOPPED (soft) " << reason << endl;
     
   }
   

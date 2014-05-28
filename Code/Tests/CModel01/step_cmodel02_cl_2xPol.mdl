@@ -16,7 +16,7 @@ Model {
       Name		      "Out1"
     }
     ParameterArgumentNames  ""
-    ComputedModelVersion    "1.71"
+    ComputedModelVersion    "1.93"
     NumModelReferences	    0
     NumTestPointedSignals   0
   }
@@ -37,9 +37,9 @@ Model {
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "ex16"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Fri May 02 09:07:53 2014"
-  RTWModifiedTimeStamp	  320922470
-  ModelVersionFormat	  "1.%<AutoIncrement:71>"
+  LastModifiedDate	  "Mon May 26 16:05:27 2014"
+  RTWModifiedTimeStamp	  323021126
+  ModelVersionFormat	  "1.%<AutoIncrement:93>"
   ConfigurationManager	  "None"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -77,6 +77,7 @@ Model {
     $ObjectID		    1
     $ClassName		    "Simulink.SimulationData.ModelLoggingInfo"
     model_		    "Untitled1"
+    signals_		    []
     overrideMode_	    [0.0]
     Array {
       Type		      "Cell"
@@ -874,7 +875,7 @@ Model {
   }
   System {
     Name		    "step_cmodel02_cl_2xPol"
-    Location		    [1323, 317, 2530, 964]
+    Location		    [1, 211, 1208, 858]
     Open		    on
     ModelBrowserVisibility  off
     ModelBrowserWidth	    200
@@ -888,7 +889,7 @@ Model {
     ShowPageBoundaries	    off
     ZoomFactor		    "100"
     ReportName		    "simulink-default.rpt"
-    SIDHighWatermark	    "136"
+    SIDHighWatermark	    "137"
     Block {
       BlockType		      Inport
       Name		      "In1"
@@ -993,14 +994,6 @@ Model {
       ZOrder		      -4
       BlockMirror	      on
       Value		      "intrinsic"
-    }
-    Block {
-      BlockType		      Constant
-      Name		      "Intrinsic2"
-      SID		      "105"
-      Position		      [150, 215, 180, 245]
-      ZOrder		      -4
-      Value		      "initE"
     }
     Block {
       BlockType		      Product
@@ -1125,6 +1118,36 @@ Model {
       SampleTime	      "0"
     }
     Block {
+      BlockType		      Scope
+      Name		      "Scope3"
+      SID		      "137"
+      Ports		      [1]
+      Position		      [230, 84, 260, 116]
+      ZOrder		      -16
+      Floating		      off
+      Location		      [6, 51, 1286, 997]
+      Open		      off
+      NumInputPorts	      "1"
+      List {
+	ListType		AxesTitles
+	axes1			"%<SignalLabel>"
+      }
+      List {
+	ListType		ScopeGraphics
+	FigureColor		"[0.5 0.5 0.5]"
+	AxesColor		"[0 0 0]"
+	AxesTickColor		"[1 1 1]"
+	LineColors		"[1 1 0;1 0 1;0 1 1;1 0 0;0 1 0;0 0 1]"
+	LineStyles		"-|-|-|-|-|-"
+	LineWidths		"[0.5 0.5 0.5 0.5 0.5 0.5]"
+	MarkerStyles		"none|none|none|none|none|none"
+      }
+      ShowLegends	      off
+      SaveName		      "ScopeData5"
+      DataFormat	      "StructureWithTime"
+      SampleTime	      "0"
+    }
+    Block {
       BlockType		      Sum
       Name		      "Sum"
       SID		      "104"
@@ -1185,6 +1208,14 @@ Model {
       }
     }
     Block {
+      BlockType		      Constant
+      Name		      "step"
+      SID		      "105"
+      Position		      [150, 215, 180, 245]
+      ZOrder		      -4
+      Value		      "initE"
+    }
+    Block {
       BlockType		      SubSystem
       Name		      "subRobot2"
       SID		      "124"
@@ -1205,8 +1236,8 @@ Model {
       }
       System {
 	Name			"subRobot2"
-	Location		[1280, 51, 2560, 997]
-	Open			on
+	Location		[2065, 547, 2807, 859]
+	Open			off
 	ModelBrowserVisibility	off
 	ModelBrowserWidth	200
 	ScreenColor		"white"
@@ -1354,8 +1385,8 @@ Model {
 	  SID			  "135"
 	  Position		  [425, 131, 530, 169]
 	  ZOrder		  -9
-	  Numerator		  "[3600]"
-	  Denominator		  "[1 15 3600]"
+	  Numerator		  "[wn^2]"
+	  Denominator		  "[1 cwn wn^2]"
 	}
 	Block {
 	  BlockType		  TransferFcn
@@ -1604,7 +1635,7 @@ Model {
       }
     }
     Line {
-      SrcBlock		      "Intrinsic2"
+      SrcBlock		      "step"
       SrcPort		      1
       Points		      [5, 0]
       DstBlock		      "Sum1"
@@ -1619,8 +1650,15 @@ Model {
     Line {
       SrcBlock		      "Sum1"
       SrcPort		      1
-      DstBlock		      "Sum"
-      DstPort		      1
+      Points		      [10, 0]
+      Branch {
+	DstBlock		"Sum"
+	DstPort			1
+      }
+      Branch {
+	DstBlock		"Scope3"
+	DstPort			1
+      }
     }
   }
 }

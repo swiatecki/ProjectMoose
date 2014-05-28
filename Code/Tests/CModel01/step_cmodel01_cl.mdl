@@ -16,7 +16,7 @@ Model {
       Name		      "Out1"
     }
     ParameterArgumentNames  ""
-    ComputedModelVersion    "1.55"
+    ComputedModelVersion    "1.56"
     NumModelReferences	    0
     NumTestPointedSignals   0
   }
@@ -37,9 +37,9 @@ Model {
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "ex16"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Mon Apr 28 10:23:27 2014"
-  RTWModifiedTimeStamp	  320581351
-  ModelVersionFormat	  "1.%<AutoIncrement:55>"
+  LastModifiedDate	  "Sat May 24 15:09:09 2014"
+  RTWModifiedTimeStamp	  322844947
+  ModelVersionFormat	  "1.%<AutoIncrement:56>"
   ConfigurationManager	  "None"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -77,7 +77,6 @@ Model {
     $ObjectID		    1
     $ClassName		    "Simulink.SimulationData.ModelLoggingInfo"
     model_		    "Untitled1"
-    signals_		    []
     overrideMode_	    [0.0]
     Array {
       Type		      "Cell"
@@ -973,7 +972,7 @@ Model {
       BlockType		      Constant
       Name		      "Intrinsic"
       SID		      "30"
-      Position		      [470, 350, 500, 380]
+      Position		      [445, 365, 475, 395]
       ZOrder		      -4
       BlockMirror	      on
       Value		      "intrinsic"
@@ -986,14 +985,6 @@ Model {
       ZOrder		      -4
       BlockMirror	      on
       Value		      "intrinsic"
-    }
-    Block {
-      BlockType		      Constant
-      Name		      "Intrinsic2"
-      SID		      "105"
-      Position		      [150, 215, 180, 245]
-      ZOrder		      -4
-      Value		      "initE"
     }
     Block {
       BlockType		      Product
@@ -1176,6 +1167,14 @@ Model {
 	RTWStorageClass		"Auto"
 	DataLoggingNameMode	"SignalName"
       }
+    }
+    Block {
+      BlockType		      Constant
+      Name		      "step size"
+      SID		      "105"
+      Position		      [150, 215, 180, 245]
+      ZOrder		      -4
+      Value		      "initE"
     }
     Block {
       BlockType		      SubSystem
@@ -1431,7 +1430,7 @@ Model {
     Line {
       SrcBlock		      "Intrinsic"
       SrcPort		      1
-      Points		      [45, 0; 0, -60]
+      Points		      [70, 0; 0, -75]
       DstBlock		      "Divide"
       DstPort		      2
     }
@@ -1569,7 +1568,7 @@ Model {
       }
     }
     Line {
-      SrcBlock		      "Intrinsic2"
+      SrcBlock		      "step size"
       SrcPort		      1
       Points		      [5, 0]
       DstBlock		      "Sum1"

@@ -1,22 +1,17 @@
 Model {
-  Name			  "step_cmodel02_cl"
+  Name			  "funRamp"
   Version		  7.9
   MdlSubVersion		  0
   GraphicalInterface {
-    NumRootInports	    1
-    Inport {
-      BusObject		      ""
-      Name		      "In1"
-    }
+    NumRootInports	    0
     NumRootOutports	    1
     Outport {
       BusObject		      ""
       BusOutputAsStruct	      "off"
-      SignalName	      "[rad]"
       Name		      "Out1"
     }
     ParameterArgumentNames  ""
-    ComputedModelVersion    "1.62"
+    ComputedModelVersion    "1.14"
     NumModelReferences	    0
     NumTestPointedSignals   0
   }
@@ -31,15 +26,15 @@ Model {
   MinMaxOverflowArchiveMode "Overwrite"
   FPTRunName		  "Run 1"
   MaxMDLFileLineLength	  120
-  Created		  "Mon Mar 17 12:57:24 2014"
+  Created		  "Tue May 27 17:55:45 2014"
   Creator		  "ex16"
   UpdateHistory		  "UpdateHistoryNever"
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "ex16"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Sat May 24 14:35:04 2014"
-  RTWModifiedTimeStamp	  322842900
-  ModelVersionFormat	  "1.%<AutoIncrement:62>"
+  LastModifiedDate	  "Wed May 28 13:09:33 2014"
+  RTWModifiedTimeStamp	  323114541
+  ModelVersionFormat	  "1.%<AutoIncrement:14>"
   ConfigurationManager	  "None"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -76,18 +71,19 @@ Model {
     $PropName		    "DataLoggingOverride"
     $ObjectID		    1
     $ClassName		    "Simulink.SimulationData.ModelLoggingInfo"
-    model_		    "Untitled1"
+    model_		    "funRamp"
     signals_		    []
-    overrideMode_	    [0.0]
+    overrideMode_	    [0U]
     Array {
       Type		      "Cell"
       Dimension		      1
-      Cell		      "Untitled1"
+      Cell		      "funRamp"
       PropName		      "logAsSpecifiedByModels_"
     }
     Array {
       Type		      "Cell"
-      Dimension		      0
+      Dimension		      1
+      Cell		      []
       PropName		      "logAsSpecifiedByModelsSSIDs_"
     }
   }
@@ -142,7 +138,7 @@ Model {
 	  $ObjectID		  3
 	  Version		  "1.12.0"
 	  StartTime		  "0.0"
-	  StopTime		  "10.0"
+	  StopTime		  "5"
 	  AbsTol		  "auto"
 	  FixedStep		  "auto"
 	  InitialStep		  "auto"
@@ -156,7 +152,7 @@ Model {
 	  MaxStep		  "auto"
 	  MinStep		  "auto"
 	  MaxConsecutiveMinStep	  "1"
-	  RelTol		  "1e-3"
+	  RelTol		  "1e-9"
 	  SolverMode		  "Auto"
 	  EnableConcurrentExecution off
 	  ConcurrentTasks	  off
@@ -623,7 +619,7 @@ Model {
       }
       Name		      "Configuration"
       CurrentDlgPage	      "Solver"
-      ConfigPrmDlgPosition     [ 840, 197, 1720, 827 ] 
+      ConfigPrmDlgPosition     [ 1798, 241, 2682, 923 ] 
     }
     PropName		    "ConfigurationSets"
   }
@@ -678,38 +674,6 @@ Model {
       PreserveConstantTs      off
     }
     Block {
-      BlockType		      DiscreteTransferFcn
-      NumeratorSource	      "Dialog"
-      Numerator		      "[1]"
-      DenominatorSource	      "Dialog"
-      Denominator	      "[1 0.5]"
-      InitialStatesSource     "Dialog"
-      InitialStates	      "0"
-      InputProcessing	      "Elements as channels (sample based)"
-      ExternalReset	      "None"
-      SampleTime	      "-1"
-      a0EqualsOne	      off
-      NumCoefMin	      "[]"
-      NumCoefMax	      "[]"
-      DenCoefMin	      "[]"
-      DenCoefMax	      "[]"
-      OutMin		      "[]"
-      OutMax		      "[]"
-      StateDataTypeStr	      "Inherit: Same as input"
-      NumCoefDataTypeStr      "Inherit: Inherit via internal rule"
-      DenCoefDataTypeStr      "Inherit: Inherit via internal rule"
-      NumProductDataTypeStr   "Inherit: Inherit via internal rule"
-      DenProductDataTypeStr   "Inherit: Inherit via internal rule"
-      NumAccumDataTypeStr     "Inherit: Inherit via internal rule"
-      DenAccumDataTypeStr     "Inherit: Inherit via internal rule"
-      OutDataTypeStr	      "Inherit: Inherit via internal rule"
-      LockScale		      off
-      RndMeth		      "Floor"
-      SaturateOnIntegerOverflow	off
-      StateMustResolveToSignalObject off
-      RTWStateStorageClass    "Auto"
-    }
-    Block {
       BlockType		      Gain
       Gain		      "1"
       Multiplication	      "Element-wise(K.*u)"
@@ -723,24 +687,6 @@ Model {
       RndMeth		      "Floor"
       SaturateOnIntegerOverflow	on
       SampleTime	      "-1"
-    }
-    Block {
-      BlockType		      Inport
-      Port		      "1"
-      OutputFunctionCall      off
-      OutMin		      "[]"
-      OutMax		      "[]"
-      OutDataTypeStr	      "Inherit: auto"
-      LockScale		      off
-      BusOutputAsStruct	      off
-      PortDimensions	      "-1"
-      VarSizeSig	      "Inherit"
-      SampleTime	      "-1"
-      SignalType	      "auto"
-      SamplingMode	      "auto"
-      LatchByDelayingOutsideSignal off
-      LatchInputForFeedbackSignals off
-      Interpolate	      on
     }
     Block {
       BlockType		      Outport
@@ -758,29 +704,6 @@ Model {
       SourceOfInitialOutputValue "Dialog"
       OutputWhenDisabled      "held"
       InitialOutput	      "[]"
-    }
-    Block {
-      BlockType		      Product
-      Inputs		      "2"
-      Multiplication	      "Element-wise(.*)"
-      CollapseMode	      "All dimensions"
-      CollapseDim	      "1"
-      InputSameDT	      on
-      OutMin		      "[]"
-      OutMax		      "[]"
-      OutDataTypeStr	      "Inherit: Same as first input"
-      LockScale		      off
-      RndMeth		      "Zero"
-      SaturateOnIntegerOverflow	on
-      SampleTime	      "-1"
-    }
-    Block {
-      BlockType		      RateLimiter
-      RisingSlewLimit	      "1"
-      FallingSlewLimit	      "-1"
-      SampleTimeMode	      "continuous"
-      InitialCondition	      "0"
-      LinearizeAsGain	      on
     }
     Block {
       BlockType		      Saturate
@@ -816,29 +739,6 @@ Model {
       SampleTime	      "-1"
     }
     Block {
-      BlockType		      SubSystem
-      ShowPortLabels	      "FromPortIcon"
-      Permissions	      "ReadWrite"
-      PermitHierarchicalResolution "All"
-      TreatAsAtomicUnit	      off
-      CheckFcnCallInpInsideContextMsg off
-      SystemSampleTime	      "-1"
-      RTWFcnNameOpts	      "Auto"
-      RTWFileNameOpts	      "Auto"
-      RTWMemSecFuncInitTerm   "Inherit from model"
-      RTWMemSecFuncExecute    "Inherit from model"
-      RTWMemSecDataConstants  "Inherit from model"
-      RTWMemSecDataInternal   "Inherit from model"
-      RTWMemSecDataParameters "Inherit from model"
-      SimViewingDevice	      off
-      DataTypeOverride	      "UseLocalSettings"
-      DataTypeOverrideAppliesTo	"AllNumericTypes"
-      MinMaxOverflowLogging   "UseLocalSettings"
-      SFBlockType	      "NONE"
-      Variant		      off
-      GeneratePreprocessorConditionals off
-    }
-    Block {
       BlockType		      Sum
       IconShape		      "rectangular"
       Inputs		      "++"
@@ -855,14 +755,19 @@ Model {
       SampleTime	      "-1"
     }
     Block {
-      BlockType		      ToWorkspace
-      VariableName	      "simulink_output"
-      MaxDataPoints	      "1000"
-      Decimation	      "1"
-      SampleTime	      "0"
-      SaveFormat	      "Array"
-      FixptAsFi		      off
-      NumInputs		      "1"
+      BlockType		      Switch
+      Criteria		      "u2 >= Threshold"
+      Threshold		      "0"
+      InputSameDT	      on
+      OutMin		      "[]"
+      OutMax		      "[]"
+      OutDataTypeStr	      "Inherit: Inherit via internal rule"
+      LockScale		      off
+      RndMeth		      "Floor"
+      SaturateOnIntegerOverflow	on
+      ZeroCross		      on
+      SampleTime	      "-1"
+      AllowDiffInputSizes     off
     }
     Block {
       BlockType		      TransferFcn
@@ -874,8 +779,8 @@ Model {
     }
   }
   System {
-    Name		    "step_cmodel02_cl"
-    Location		    [1, 347, 1208, 994]
+    Name		    "funRamp"
+    Location		    [1627, 798, 3039, 1058]
     Open		    on
     ModelBrowserVisibility  off
     ModelBrowserWidth	    200
@@ -889,163 +794,113 @@ Model {
     ShowPageBoundaries	    off
     ZoomFactor		    "100"
     ReportName		    "simulink-default.rpt"
-    SIDHighWatermark	    "135"
+    SIDHighWatermark	    "14"
     Block {
-      BlockType		      Inport
-      Name		      "In1"
-      SID		      "33"
-      Position		      [130, 163, 160, 177]
-      ZOrder		      -1
-      IconDisplay	      "Port number"
+      BlockType		      Constant
+      Name		      "Constant"
+      SID		      "11"
+      Position		      [180, 15, 210, 45]
+      ZOrder		      -4
     }
     Block {
-      BlockType		      Product
-      Name		      "Divide"
-      SID		      "29"
-      Ports		      [2, 1]
-      Position		      [445, 281, 475, 314]
-      ZOrder		      -8
-      BlockMirror	      on
-      Inputs		      "*/"
-      InputSameDT	      off
-      OutDataTypeStr	      "Inherit: Inherit via internal rule"
-      RndMeth		      "Floor"
-      SaturateOnIntegerOverflow	off
-    }
-    Block {
-      BlockType		      Product
-      Name		      "Divide From m to rad"
-      SID		      "65"
-      Ports		      [2, 1]
-      Position		      [445, 147, 475, 178]
-      ZOrder		      -8
-      Inputs		      "*/"
-      InputSameDT	      off
-      OutDataTypeStr	      "Inherit: Inherit via internal rule"
-      RndMeth		      "Floor"
-      SaturateOnIntegerOverflow	off
-    }
-    Block {
-      BlockType		      Product
-      Name		      "Divide1"
-      SID		      "96"
-      Ports		      [2, 1]
-      Position		      [610, 271, 640, 304]
-      ZOrder		      -8
-      BlockMirror	      on
-      Inputs		      "*/"
-      InputSameDT	      off
-      OutDataTypeStr	      "Inherit: Inherit via internal rule"
-      RndMeth		      "Floor"
-      SaturateOnIntegerOverflow	off
-      Port {
-	PortNumber		1
-	Name			"[px]"
-	RTWStorageClass		"Auto"
-	DataLoggingNameMode	"SignalName"
-      }
+      BlockType		      Constant
+      Name		      "Constant1"
+      SID		      "13"
+      Position		      [280, 130, 310, 160]
+      ZOrder		      -4
+      Value		      "0"
     }
     Block {
       BlockType		      Gain
       Name		      "Gain"
-      SID		      "106"
-      Position		      [585, 150, 615, 180]
+      SID		      "3"
+      Position		      [325, 15, 355, 45]
       ZOrder		      -8
-      Gain		      "gain"
+      Gain		      "1.5"
       ParamDataTypeStr	      "Inherit: Inherit via internal rule"
       OutDataTypeStr	      "Inherit: Inherit via internal rule"
       SaturateOnIntegerOverflow	off
-    }
-    Block {
-      BlockType		      Constant
-      Name		      "Heigh"
-      SID		      "101"
-      Position		      [635, 380, 665, 410]
-      ZOrder		      -4
-      BlockMirror	      on
-      Value		      "height"
     }
     Block {
       BlockType		      Gain
-      Name		      "Height"
-      SID		      "31"
-      Position		      [355, 278, 390, 312]
+      Name		      "Gain1"
+      SID		      "9"
+      Position		      [470, 85, 500, 115]
       ZOrder		      -8
-      BlockMirror	      on
-      Gain		      "height"
+      Gain		      "10"
       ParamDataTypeStr	      "Inherit: Inherit via internal rule"
       OutDataTypeStr	      "Inherit: Inherit via internal rule"
       SaturateOnIntegerOverflow	off
     }
     Block {
-      BlockType		      Constant
-      Name		      "Intrinsic"
-      SID		      "30"
-      Position		      [470, 350, 500, 380]
-      ZOrder		      -4
-      BlockMirror	      on
-      Value		      "intrinsic"
+      BlockType		      Reference
+      Name		      "Ramp"
+      SID		      "2"
+      Ports		      [0, 1]
+      Position		      [25, 85, 55, 115]
+      ZOrder		      -14
+      LibraryVersion	      "1.260"
+      SourceBlock	      "simulink/Sources/Ramp"
+      SourceType	      "Ramp"
+      slope		      "1"
+      start		      "0"
+      X0		      "0"
+      VectorParams1D	      on
     }
     Block {
-      BlockType		      Constant
-      Name		      "Intrinsic1"
-      SID		      "98"
-      Position		      [715, 390, 745, 420]
-      ZOrder		      -4
-      BlockMirror	      on
-      Value		      "intrinsic"
-    }
-    Block {
-      BlockType		      Constant
-      Name		      "Intrinsic2"
-      SID		      "105"
-      Position		      [150, 215, 180, 245]
-      ZOrder		      -4
-      Value		      "initE"
-    }
-    Block {
-      BlockType		      Product
-      Name		      "Mult"
-      SID		      "100"
-      Ports		      [2, 1]
-      Position		      [680, 276, 710, 309]
-      ZOrder		      -8
-      BlockMirror	      on
-      Inputs		      "**"
-      InputSameDT	      off
-      OutDataTypeStr	      "Inherit: Inherit via internal rule"
-      RndMeth		      "Floor"
-      SaturateOnIntegerOverflow	off
-    }
-    Block {
-      BlockType		      Constant
-      Name		      "Radius"
-      SID		      "66"
-      Position		      [425, 200, 455, 230]
-      ZOrder		      -4
-      Value		      "radius"
-    }
-    Block {
-      BlockType		      Constant
-      Name		      "Radius1"
-      SID		      "95"
-      Position		      [895, 295, 925, 325]
-      ZOrder		      -4
-      BlockMirror	      on
-      Value		      "radius"
+      BlockType		      Saturate
+      Name		      "Saturation"
+      SID		      "7"
+      Ports		      [1, 1]
+      Position		      [125, 85, 155, 115]
+      ZOrder		      -15
+      InputPortMap	      "u0"
+      UpperLimit	      "1"
+      LowerLimit	      "0"
     }
     Block {
       BlockType		      Scope
       Name		      "Scope"
-      SID		      "107"
+      SID		      "8"
       Ports		      [1]
-      Position		      [285, 399, 315, 431]
+      Position		      [565, 14, 595, 46]
+      ZOrder		      -16
+      Floating		      off
+      Location		      [0, 51, 1280, 997]
+      Open		      on
+      NumInputPorts	      "1"
+      ZoomMode		      "xonly"
+      List {
+	ListType		AxesTitles
+	axes1			"%<SignalLabel>"
+      }
+      List {
+	ListType		ScopeGraphics
+	FigureColor		"[0.5 0.5 0.5]"
+	AxesColor		"[0 0 0]"
+	AxesTickColor		"[1 1 1]"
+	LineColors		"[1 1 0;1 0 1;0 1 1;1 0 0;0 1 0;0 0 1]"
+	LineStyles		"-|-|-|-|-|-"
+	LineWidths		"[0.5 0.5 0.5 0.5 0.5 0.5]"
+	MarkerStyles		"none|none|none|none|none|none"
+      }
+      ShowLegends	      off
+      DataFormat	      "StructureWithTime"
+      SampleTime	      "0"
+    }
+    Block {
+      BlockType		      Scope
+      Name		      "Scope1"
+      SID		      "10"
+      Ports		      [1]
+      Position		      [180, 149, 210, 181]
       ZOrder		      -16
       BlockMirror	      on
       Floating		      off
-      Location		      [6, 51, 1286, 997]
-      Open		      off
+      Location		      [2181, 249, 3461, 1195]
+      Open		      on
       NumInputPorts	      "1"
+      ZoomMode		      "xonly"
       List {
 	ListType		AxesTitles
 	axes1			"%<SignalLabel>"
@@ -1067,45 +922,16 @@ Model {
     }
     Block {
       BlockType		      Scope
-      Name		      "Scope1"
-      SID		      "108"
-      Ports		      [1]
-      Position		      [680, 59, 710, 91]
-      ZOrder		      -16
-      Floating		      off
-      Location		      [1, 51, 1281, 997]
-      Open		      off
-      NumInputPorts	      "1"
-      List {
-	ListType		AxesTitles
-	axes1			"%<SignalLabel>"
-      }
-      List {
-	ListType		ScopeGraphics
-	FigureColor		"[0.5 0.5 0.5]"
-	AxesColor		"[0 0 0]"
-	AxesTickColor		"[1 1 1]"
-	LineColors		"[1 1 0;1 0 1;0 1 1;1 0 0;0 1 0;0 0 1]"
-	LineStyles		"-|-|-|-|-|-"
-	LineWidths		"[0.5 0.5 0.5 0.5 0.5 0.5]"
-	MarkerStyles		"none|none|none|none|none|none"
-      }
-      ShowLegends	      off
-      SaveName		      "ScopeData3"
-      DataFormat	      "StructureWithTime"
-      SampleTime	      "0"
-    }
-    Block {
-      BlockType		      Scope
       Name		      "Scope2"
-      SID		      "109"
+      SID		      "14"
       Ports		      [1]
-      Position		      [925, 149, 955, 181]
+      Position		      [510, 149, 540, 181]
       ZOrder		      -16
       Floating		      off
-      Location		      [1, 51, 1281, 997]
+      Location		      [1915, 248, 3195, 1194]
       Open		      off
       NumInputPorts	      "1"
+      ZoomMode		      "xonly"
       List {
 	ListType		AxesTitles
 	axes1			"%<SignalLabel>"
@@ -1121,16 +947,16 @@ Model {
 	MarkerStyles		"none|none|none|none|none|none"
       }
       ShowLegends	      off
-      SaveName		      "ScopeData4"
+      SaveName		      "ScopeData2"
       DataFormat	      "StructureWithTime"
       SampleTime	      "0"
     }
     Block {
       BlockType		      Sum
-      Name		      "Sum"
-      SID		      "104"
+      Name		      "Sum1"
+      SID		      "1"
       Ports		      [2, 1]
-      Position		      [270, 160, 290, 180]
+      Position		      [235, 90, 255, 110]
       ZOrder		      -18
       ShowName		      off
       IconShape		      "round"
@@ -1141,10 +967,10 @@ Model {
     }
     Block {
       BlockType		      Sum
-      Name		      "Sum1"
-      SID		      "111"
+      Name		      "Sum2"
+      SID		      "4"
       Ports		      [2, 1]
-      Position		      [180, 160, 200, 180]
+      Position		      [520, 90, 540, 110]
       ZOrder		      -18
       ShowName		      off
       IconShape		      "round"
@@ -1154,459 +980,133 @@ Model {
       SaturateOnIntegerOverflow	off
     }
     Block {
-      BlockType		      ToWorkspace
-      Name		      "To Workspace"
-      SID		      "14"
-      Ports		      [1]
-      Position		      [990, 210, 1050, 240]
-      ZOrder		      -7
-      VariableName	      "simout"
-      MaxDataPoints	      "inf"
-      SampleTime	      "-1"
-      SaveFormat	      "Structure With Time"
-    }
-    Block {
-      BlockType		      Product
-      Name		      "from rad to m"
-      SID		      "94"
-      Ports		      [2, 1]
-      Position		      [780, 262, 810, 293]
-      ZOrder		      -8
-      BlockMirror	      on
-      Inputs		      "**"
+      BlockType		      Switch
+      Name		      "Switch"
+      SID		      "12"
+      Position		      [350, 76, 425, 124]
+      ZOrder		      -18
+      Threshold		      "0.99"
       InputSameDT	      off
-      OutDataTypeStr	      "Inherit: Inherit via internal rule"
-      RndMeth		      "Floor"
       SaturateOnIntegerOverflow	off
-      Port {
-	PortNumber		1
-	Name			"[m]"
-	RTWStorageClass		"Auto"
-	DataLoggingNameMode	"SignalName"
-      }
     }
     Block {
-      BlockType		      SubSystem
-      Name		      "subRobot2"
-      SID		      "124"
-      Ports		      [1, 1]
-      Position		      [740, 135, 780, 195]
-      MinAlgLoopOccurrences   off
-      PropExecContextOutsideSubsystem off
-      RTWSystemCode	      "Auto"
-      FunctionWithSeparateData off
-      Opaque		      off
-      RequestExecContextInheritance off
-      MaskHideContents	      off
-      Port {
-	PortNumber		1
-	Name			"[rad]"
-	RTWStorageClass		"Auto"
-	DataLoggingNameMode	"SignalName"
-      }
-      System {
-	Name			"subRobot2"
-	Location		[1280, 51, 2560, 997]
-	Open			off
-	ModelBrowserVisibility	off
-	ModelBrowserWidth	200
-	ScreenColor		"white"
-	PaperOrientation	"landscape"
-	PaperPositionMode	"auto"
-	PaperType		"usletter"
-	PaperUnits		"inches"
-	TiledPaperMargins	[0.500000, 0.500000, 0.500000, 0.500000]
-	TiledPageScale		1
-	ShowPageBoundaries	off
-	ZoomFactor		"100"
-	Block {
-	  BlockType		  Inport
-	  Name			  "In1"
-	  SID			  "125"
-	  Position		  [15, 143, 45, 157]
-	  IconDisplay		  "Port number"
-	}
-	Block {
-	  BlockType		  RateLimiter
-	  Name			  "Rate Limiter1"
-	  SID			  "126"
-	  Position		  [190, 135, 220, 165]
-	  ZOrder		  -7
-	  RisingSlewLimit	  "15"
-	  FallingSlewLimit	  "-15"
-	  SampleTimeMode	  "inherited"
-	}
-	Block {
-	  BlockType		  Scope
-	  Name			  "Rate Scope"
-	  SID			  "127"
-	  Ports			  [1]
-	  Position		  [290, 29, 320, 61]
-	  ZOrder		  -3
-	  Floating		  off
-	  Location		  [776, 557, 1199, 921]
-	  Open			  off
-	  NumInputPorts		  "1"
-	  List {
-	    ListType		    AxesTitles
-	    axes1		    "%<SignalLabel>"
-	  }
-	  List {
-	    ListType		    ScopeGraphics
-	    FigureColor		    "[0.5 0.5 0.5]"
-	    AxesColor		    "[0 0 0]"
-	    AxesTickColor	    "[1 1 1]"
-	    LineColors		    "[1 1 0;1 0 1;0 1 1;1 0 0;0 1 0;0 0 1]"
-	    LineStyles		    "-|-|-|-|-|-"
-	    LineWidths		    "[0.5 0.5 0.5 0.5 0.5 0.5]"
-	    MarkerStyles	    "none|none|none|none|none|none"
-	  }
-	  ShowLegends		  off
-	  TimeRange		  "2"
-	  YMin			  "0"
-	  YMax			  "0.25"
-	  SaveName		  "ScopeData2"
-	  DataFormat		  "StructureWithTime"
-	  SampleTime		  "0"
-	}
-	Block {
-	  BlockType		  DiscreteTransferFcn
-	  Name			  "Robot delay"
-	  SID			  "128"
-	  Ports			  [1, 1]
-	  Position		  [275, 132, 335, 168]
-	  ZOrder		  -2
-	  InputPortMap		  "u0"
-	  Denominator		  "[1 0 0]"
-	  SampleTime		  "T"
-	}
-	Block {
-	  BlockType		  Scope
-	  Name			  "Saturation Scope"
-	  SID			  "129"
-	  Ports			  [1]
-	  Position		  [135, 14, 165, 46]
-	  ZOrder		  -3
-	  Floating		  off
-	  Location		  [776, 557, 1199, 921]
-	  Open			  off
-	  NumInputPorts		  "1"
-	  List {
-	    ListType		    AxesTitles
-	    axes1		    "%<SignalLabel>"
-	  }
-	  List {
-	    ListType		    ScopeGraphics
-	    FigureColor		    "[0.5 0.5 0.5]"
-	    AxesColor		    "[0 0 0]"
-	    AxesTickColor	    "[1 1 1]"
-	    LineColors		    "[1 1 0;1 0 1;0 1 1;1 0 0;0 1 0;0 0 1]"
-	    LineStyles		    "-|-|-|-|-|-"
-	    LineWidths		    "[0.5 0.5 0.5 0.5 0.5 0.5]"
-	    MarkerStyles	    "none|none|none|none|none|none"
-	  }
-	  ShowLegends		  off
-	  DataFormat		  "StructureWithTime"
-	  SampleTime		  "0"
-	}
-	Block {
-	  BlockType		  Saturate
-	  Name			  "Saturation1"
-	  SID			  "130"
-	  Ports			  [1, 1]
-	  Position		  [100, 135, 130, 165]
-	  ZOrder		  -15
-	  InputPortMap		  "u0"
-	  UpperLimit		  "3.2"
-	  LowerLimit		  "-3.2"
-	  SampleTime		  "T"
-	}
-	Block {
-	  BlockType		  Sum
-	  Name			  "Sum1"
-	  SID			  "131"
-	  Ports			  [2, 1]
-	  Position		  [70, 75, 90, 95]
-	  ZOrder		  -18
-	  ShowName		  off
-	  IconShape		  "round"
-	  Inputs		  "|+-"
-	  InputSameDT		  off
-	  OutDataTypeStr	  "Inherit: Inherit via internal rule"
-	  SaturateOnIntegerOverflow off
-	}
-	Block {
-	  BlockType		  Sum
-	  Name			  "Sum2"
-	  SID			  "132"
-	  Ports			  [2, 1]
-	  Position		  [230, 75, 250, 95]
-	  ZOrder		  -18
-	  ShowName		  off
-	  IconShape		  "round"
-	  Inputs		  "|+-"
-	  InputSameDT		  off
-	  OutDataTypeStr	  "Inherit: Inherit via internal rule"
-	  SaturateOnIntegerOverflow off
-	}
-	Block {
-	  BlockType		  TransferFcn
-	  Name			  "Transfer Fcn"
-	  SID			  "133"
-	  Position		  [365, 131, 470, 169]
-	  ZOrder		  -9
-	  Denominator		  "[0.033333 1 0]"
-	}
-	Block {
-	  BlockType		  Outport
-	  Name			  "Out1"
-	  SID			  "134"
-	  Position		  [540, 143, 570, 157]
-	  IconDisplay		  "Port number"
-	}
-	Line {
-	  SrcBlock		  "Saturation1"
-	  SrcPort		  1
-	  Points		  [5, 0]
-	  Branch {
-	    Points		    [20, 0]
-	    Branch {
-	      DstBlock		      "Rate Limiter1"
-	      DstPort		      1
-	    }
-	    Branch {
-	      Points		      [0, -65]
-	      DstBlock		      "Sum2"
-	      DstPort		      1
-	    }
-	  }
-	  Branch {
-	    Points		    [0, -10; -5, -40]
-	    DstBlock		    "Sum1"
-	    DstPort		    2
-	  }
-	}
-	Line {
-	  SrcBlock		  "Rate Limiter1"
-	  SrcPort		  1
-	  Points		  [10, 0]
-	  Branch {
-	    DstBlock		    "Robot delay"
-	    DstPort		    1
-	  }
-	  Branch {
-	    DstBlock		    "Sum2"
-	    DstPort		    2
-	  }
-	}
-	Line {
-	  SrcBlock		  "Sum2"
-	  SrcPort		  1
-	  Points		  [0, -40]
-	  DstBlock		  "Rate Scope"
-	  DstPort		  1
-	}
-	Line {
-	  SrcBlock		  "In1"
-	  SrcPort		  1
-	  Points		  [15, 0]
-	  Branch {
-	    DstBlock		    "Saturation1"
-	    DstPort		    1
-	  }
-	  Branch {
-	    Points		    [-10, 0]
-	    DstBlock		    "Sum1"
-	    DstPort		    1
-	  }
-	}
-	Line {
-	  SrcBlock		  "Sum1"
-	  SrcPort		  1
-	  Points		  [0, -55]
-	  DstBlock		  "Saturation Scope"
-	  DstPort		  1
-	}
-	Line {
-	  SrcBlock		  "Robot delay"
-	  SrcPort		  1
-	  DstBlock		  "Transfer Fcn"
-	  DstPort		  1
-	}
-	Line {
-	  SrcBlock		  "Transfer Fcn"
-	  SrcPort		  1
-	  DstBlock		  "Out1"
-	  DstPort		  1
-	}
-      }
+      BlockType		      TransferFcn
+      Name		      "Transfer Fcn"
+      SID		      "5"
+      Position		      [585, 82, 645, 118]
+      ZOrder		      -9
+      Denominator	      "[1 0]"
     }
     Block {
       BlockType		      Outport
       Name		      "Out1"
-      SID		      "112"
-      Position		      [910, 68, 940, 82]
+      SID		      "6"
+      Position		      [710, 93, 740, 107]
       ZOrder		      -23
       IconDisplay	      "Port number"
     }
     Line {
-      SrcBlock		      "Intrinsic"
+      SrcBlock		      "Transfer Fcn"
       SrcPort		      1
-      Points		      [45, 0; 0, -60]
-      DstBlock		      "Divide"
-      DstPort		      2
-    }
-    Line {
-      SrcBlock		      "Divide"
-      SrcPort		      1
-      Points		      [-35, 0]
-      DstBlock		      "Height"
-      DstPort		      1
-    }
-    Line {
-      SrcBlock		      "Height"
-      SrcPort		      1
-      Points		      [-30, 0]
+      Points		      [30, 0]
       Branch {
-	Points			[10, 0]
-	DstBlock		"Scope"
-	DstPort			1
+	Points			[5, 0]
+	Branch {
+	  DstBlock		  "Out1"
+	  DstPort		  1
+	}
+	Branch {
+	  Points		  [-5, 0; 0, -70]
+	  DstBlock		  "Scope"
+	  DstPort		  1
+	}
       }
       Branch {
-	Points			[-5, 0]
-	DstBlock		"Sum"
+	Points			[35, 95; -435, 5; 0, -5; -35, 0]
+	DstBlock		"Sum1"
 	DstPort			2
       }
     }
     Line {
-      SrcBlock		      "Radius"
+      SrcBlock		      "Sum2"
       SrcPort		      1
-      Points		      [-95, 0; 0, -45]
-      DstBlock		      "Divide From m to rad"
-      DstPort		      2
-    }
-    Line {
-      Name		      "[rad]"
-      SrcBlock		      "subRobot2"
-      SrcPort		      1
-      Points		      [45, 0; 0, 10]
-      Branch {
-	Labels			[1, 0]
-	Points			[0, 95]
-	DstBlock		"from rad to m"
-	DstPort			1
-      }
-      Branch {
-	Points			[0, -10; 40, 0]
-	Branch {
-	  Points		  [0, 60]
-	  DstBlock		  "To Workspace"
-	  DstPort		  1
-	}
-	Branch {
-	  Points		  [15, 0]
-	  Branch {
-	    DstBlock		    "Scope2"
-	    DstPort		    1
-	  }
-	  Branch {
-	    Points		    [0, -90]
-	    DstBlock		    "Out1"
-	    DstPort		    1
-	  }
-	}
-      }
-    }
-    Line {
-      SrcBlock		      "Radius1"
-      SrcPort		      1
-      Points		      [0, -25]
-      DstBlock		      "from rad to m"
-      DstPort		      2
-    }
-    Line {
-      SrcBlock		      "Heigh"
-      SrcPort		      1
-      Points		      [0, -55; 25, 0]
-      DstBlock		      "Divide1"
-      DstPort		      2
-    }
-    Line {
-      SrcBlock		      "Mult"
-      SrcPort		      1
-      Points		      [-20, 0]
-      DstBlock		      "Divide1"
-      DstPort		      1
-    }
-    Line {
-      SrcBlock		      "Intrinsic1"
-      SrcPort		      1
-      Points		      [0, -45; 35, 0; 0, -60]
-      DstBlock		      "Mult"
-      DstPort		      2
-    }
-    Line {
-      Name		      "[m]"
-      Labels		      [2, 0]
-      SrcBlock		      "from rad to m"
-      SrcPort		      1
-      Points		      [0, 5]
-      DstBlock		      "Mult"
-      DstPort		      1
-    }
-    Line {
-      Name		      "[px]"
-      Labels		      [0, 0]
-      SrcBlock		      "Divide1"
-      SrcPort		      1
-      DstBlock		      "Divide"
-      DstPort		      1
-    }
-    Line {
-      SrcBlock		      "Sum"
-      SrcPort		      1
-      Points		      [60, 0; 0, -15]
-      DstBlock		      "Divide From m to rad"
-      DstPort		      1
-    }
-    Line {
-      SrcBlock		      "Divide From m to rad"
-      SrcPort		      1
-      DstBlock		      "Gain"
+      DstBlock		      "Transfer Fcn"
       DstPort		      1
     }
     Line {
       SrcBlock		      "Gain"
       SrcPort		      1
-      Points		      [5, 0]
-      Branch {
-	Points			[0, -90]
-	DstBlock		"Scope1"
-	DstPort			1
-      }
-      Branch {
-	DstBlock		"subRobot2"
-	DstPort			1
-      }
-    }
-    Line {
-      SrcBlock		      "Intrinsic2"
-      SrcPort		      1
-      Points		      [5, 0]
-      DstBlock		      "Sum1"
+      Points		      [150, 0; 0, 95]
+      DstBlock		      "Sum2"
       DstPort		      2
     }
     Line {
-      SrcBlock		      "In1"
+      SrcBlock		      "Saturation"
       SrcPort		      1
-      DstBlock		      "Sum1"
+      Points		      [10, 0]
+      Branch {
+	DstBlock		"Sum1"
+	DstPort			1
+      }
+      Branch {
+	Points			[0, -20; 165, 0]
+	DstBlock		"Switch"
+	DstPort			2
+      }
+    }
+    Line {
+      SrcBlock		      "Ramp"
+      SrcPort		      1
+      DstBlock		      "Saturation"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "Gain1"
+      SrcPort		      1
+      DstBlock		      "Sum2"
       DstPort		      1
     }
     Line {
       SrcBlock		      "Sum1"
       SrcPort		      1
-      DstBlock		      "Sum"
+      Points		      [10, 0; 0, 5]
+      Branch {
+	Points			[0, 60]
+	DstBlock		"Scope1"
+	DstPort			1
+      }
+      Branch {
+	Points			[0, -20]
+	DstBlock		"Switch"
+	DstPort			1
+      }
+    }
+    Line {
+      SrcBlock		      "Constant"
+      SrcPort		      1
+      DstBlock		      "Gain"
       DstPort		      1
+    }
+    Line {
+      SrcBlock		      "Switch"
+      SrcPort		      1
+      Points		      [10, 0]
+      Branch {
+	DstBlock		"Gain1"
+	DstPort			1
+      }
+      Branch {
+	Points			[0, 65]
+	DstBlock		"Scope2"
+	DstPort			1
+      }
+    }
+    Line {
+      SrcBlock		      "Constant1"
+      SrcPort		      1
+      Points		      [10, 0; 0, -30]
+      DstBlock		      "Switch"
+      DstPort		      3
     }
   }
 }
